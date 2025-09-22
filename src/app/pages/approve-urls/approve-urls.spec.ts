@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ApproveUrls } from './approve-urls';
+import { ApproveUrlsComponent } from './approve-urls';
 
 describe('ApproveUrls', () => {
-  let component: ApproveUrls;
-  let fixture: ComponentFixture<ApproveUrls>;
+  let component: ApproveUrlsComponent;
+  let fixture: ComponentFixture<ApproveUrlsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ApproveUrls]
+      imports: [ApproveUrlsComponent],
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ApproveUrls);
+    fixture = TestBed.createComponent(ApproveUrlsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
