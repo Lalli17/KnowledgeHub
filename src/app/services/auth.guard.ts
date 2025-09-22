@@ -1,24 +1,29 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, ActivatedRouteSnapshot, Router } from '@angular/router';
+import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from './auth';
 
-export const AuthGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
-  const auth = inject(AuthService);
+// Guard to check if a user is logged in
+export const authGuard: CanActivateFn = () => {
+  const authService = inject(AuthService);
   const router = inject(Router);
 
-  if (!auth.isLoggedIn()) {
-    router.navigate(['/login']);
-    return false;
+  if (authService.isLoggedIn()) {
+    return true; // If logged in, allow access
   }
 
-  const roles = route.data['roles'] as string[] | undefined;
-  if (roles && roles.length > 0) {
-    const user = auth.getCurrentUser();
-    if (!user || !roles.includes(user.role)) {
-      router.navigate(['/']);
-      return false;
-    }
+  // If not logged in, redirect to the login page
+  return router.parseUrl('/login');
+};
+
+// Guard to check if a user is an Admin
+export const adminGuard: CanActivateFn = () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  if (authService.isAdmin()) {
+    return true; // If admin, allow access
   }
 
-  return true;
+  // If not an admin, redirect to the home page
+  return router.parseUrl('/');
 };

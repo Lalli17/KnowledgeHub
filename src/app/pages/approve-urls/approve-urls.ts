@@ -4,8 +4,9 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-approve-urls',
+  standalone: true, // <-- THIS IS THE FIX
+  imports: [CommonModule],
   templateUrl: './approve-urls.html',
-  imports: [CommonModule]
 })
 export class ApproveUrlsComponent implements OnInit {
   pending: any[] = [];
@@ -20,6 +21,7 @@ export class ApproveUrlsComponent implements OnInit {
     this.api.getPendingUrls().subscribe(p => this.pending = p);
   }
 
+  // The code below will now work because ApiService has these methods again
   approve(id: number) {
     this.api.approveUrl(id).subscribe(() => this.load());
   }

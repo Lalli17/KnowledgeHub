@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router'; // Import Router
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth';
 
@@ -10,9 +10,12 @@ import { AuthService } from '../../services/auth';
   templateUrl: './navbar.html'
 })
 export class NavbarComponent {
-  constructor(public auth: AuthService) {}
+  // Inject the Router along with the AuthService
+  constructor(public auth: AuthService, private router: Router) {}
 
   logout() {
     this.auth.logout();
+    // After logging out, navigate the user to the login page
+    this.router.navigate(['/login']);
   }
 }

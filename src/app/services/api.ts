@@ -1,31 +1,51 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environments/environments';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environments';
+
+// Data Models
+export interface Category { id: number; categoryName: string; categoryDescription: string; }
+export interface BrowseUrl { title: string; url: string; description: string; postedBy: string; categoryName: string; }
+export interface SubmitUrlPayload { title: string; url: string; description: string; categoryId: number; }
+export interface PendingUrl { articleIds: number[]; title: string; url: string; } // Matching your component's needs
+export interface ReviewPayload { articleIds: number[]; action: 'Approve' | 'Reject'; }
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  base = `${environment.apiBaseUrl}`;
+  private base = environment.apiBaseUrl;
 
   constructor(private http: HttpClient) {}
 
   // Categories
-  getCategories() { return this.http.get<any[]>(`${this.base}/categories`); }
-  createCategory(payload: any) { return this.http.post(`${this.base}/categories`, payload); }
+  getCategories(): Observable<Category[]> { return this.http.get<Category[]>(`${this.base}/Category`); }
+  createCategory(payload: any): Observable<any> { return this.http.post(`${this.base}/Category`, payload); }
 
   // URLs
-  browseUrls() { return this.http.get<any[]>(`${this.base}/urls`); } // public
-  submitUrl(payload: any) { return this.http.post(`${this.base}/urls`, payload); }
+  browseUrls(): Observable<BrowseUrl[]> { return this.http.get<BrowseUrl[]>(`${this.base}/ArticleReview/browse`); }
+  submitUrl(payload: SubmitUrlPayload): Observable<any> { return this.http.post(`${this.base}/ArticleReview/submit`, payload); }
 
-  // Approve / Reject
-  getPendingUrls() { return this.http.get<any[]>(`${this.base}/urls/pending`); }
-  approveUrl(id: number) { return this.http.post(`${this.base}/urls/${id}/approve`, {}); }
-  rejectUrl(id: number) { return this.http.post(`${this.base}/urls/${id}/reject`, {}); }
+  // Admin: Approve / Reject
+  getPendingUrls(categoryId: number = 1): Observable<PendingUrl[]> {
+    return this.http.get<PendingUrl[]>(`${this.base}/ArticleReview/pending?categoryId=${categoryId}`);
+  }
+  reviewUrls(payload: ReviewPayload): Observable<any> {
+    return this.http.post(`${this.base}/ArticleReview/review`, payload);
+  }
+
+  // --- THIS IS THE FIX ---
+  // Adding back the methods that approve-urls.ts expects.
+  // They now call the correct backend endpoint via reviewUrls.
+  approveUrl(id: number): Observable<any> {
+    const payload: ReviewPayload = { articleIds: [id], action: 'Approve' };
+    return this.reviewUrls(payload);
+  }
+
+  rejectUrl(id: number): Observable<any> {
+    const payload: ReviewPayload = { articleIds: [id], action: 'Reject' };
+    return this.reviewUrls(payload);
+  }
+  // -------------------------
 
   // Users
-  listUsers() { return this.http.get<any[]>(`${this.base}/users`); }
-
-  // Auth (if you prefer)
-  login(payload: any) { return this.http.post(`${this.base}/auth/login`, payload); }
-  register(payload: any) { return this.http.post(`${this.base}/auth/register`, payload); }
+  listUsers(): Observable<any[]> { return this.http.get<any[]>(`${this.base}/users`); }
 }
