@@ -2,17 +2,17 @@
 <table class="table">
   <thead><tr><th>Title</th><th>URL</th><th>Category</th><th>Actions</th></tr></thead>
   <tbody>
-    @for (p of pending; track p.id) {
+    <!-- THIS IS THE FIX: We now track by p.title and pass p.articleIds[0] to the approve/reject methods -->
+    @for (p of pending; track p.title) {
       <tr>
         <td>{{ p.title }}</td>
         <td><a [href]="p.url" target="_blank">Open</a></td>
         <td>{{ p.categoryName }}</td>
         <td>
-          <button class="btn btn-sm btn-success me-1" (click)="approve(p.id)">Approve</button>
-          <button class="btn btn-sm btn-danger" (click)="reject(p.id)">Reject</button>
+          <button class="btn btn-sm btn-success me-1" (click)="approve(p.articleIds[0])">Approve</button>
+          <button class="btn btn-sm btn-danger" (click)="reject(p.articleIds[0])">Reject</button>
         </td>
       </tr>
     }
   </tbody>
 </table>
-

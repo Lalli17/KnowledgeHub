@@ -1,1 +1,76 @@
-<p>submit-url works!</p>
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h2>Submit a New URL</h2>
+        </div>
+        <div class="card-body">
+          <p>Share a link with the community. It will be reviewed by an admin before being published.</p>
+
+          <!-- Display a success message after a successful submission -->
+          <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+
+          <!-- The main form. (ngSubmit) calls our onSubmit() function. -->
+          <form #submitForm="ngForm" (ngSubmit)="onSubmit()">
+
+            <!-- Title Field -->
+            <div class="mb-3">
+              <label for="title" class="form-label">Title</label>
+              <input type="text" class="form-control" id="title" name="title" required
+                     [(ngModel)]="model.title" #title="ngModel">
+              <div *ngIf="title.invalid && (title.dirty || title.touched)" class="text-danger small mt-1">
+                Title is required.
+              </div>
+            </div>
+
+            <!-- URL Field -->
+            <div class="mb-3">
+              <label for="url" class="form-label">URL</label>
+              <input type="url" class="form-control" id="url" name="url" required
+                     [(ngModel)]="model.url" #url="ngModel">
+              <div *ngIf="url.invalid && (url.dirty || url.touched)" class="text-danger small mt-1">
+                A valid URL is required.
+              </div>
+            </div>
+
+            <!-- Description Field -->
+            <div class="mb-3">
+              <label for="description" class="form-label">Description</label>
+              <textarea class="form-control" id="description" name="description" rows="4" required
+                        [(ngModel)]="model.description" #description="ngModel"></textarea>
+              <div *ngIf="description.invalid && (description.dirty || description.touched)" class="text-danger small mt-1">
+                Description is required.
+              </div>
+            </div>
+
+            <!-- Category Dropdown -->
+            <div class="mb-3">
+              <label for="category" class="form-label">Category</label>
+              <select class="form-select" id="category" name="category" required
+                      [(ngModel)]="model.categoryId" #category="ngModel">
+                <option [value]="0" disabled>-- Select a Category --</option>
+                <!-- Loop through the categories fetched from the API -->
+                <option *ngFor="let cat of categories" [value]="cat.id">
+                  {{ cat.categoryName }}
+                </option>
+              </select>
+              <div *ngIf="model.categoryId === 0 && category.touched" class="text-danger small mt-1">
+                Please select a category.
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary w-100" [disabled]="!submitForm.form.valid || isLoading">
+              <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              {{ isLoading ? ' Submitting...' : 'Submit for Review' }}
+            </button>
+          </form>
+
+          <!-- Display a general error message if submission fails -->
+          <div *ngIf="error" class="alert alert-danger mt-3">{{ error }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
