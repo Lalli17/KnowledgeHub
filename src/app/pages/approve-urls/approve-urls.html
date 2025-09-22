@@ -1,1 +1,18 @@
-<p>approve-urls works!</p>
+<h3>Approve URLs</h3>
+<table class="table">
+  <thead><tr><th>Title</th><th>URL</th><th>Category</th><th>Actions</th></tr></thead>
+  <tbody>
+    @for (p of pending; track p.id) {
+      <tr>
+        <td>{{ p.title }}</td>
+        <td><a [href]="p.url" target="_blank">Open</a></td>
+        <td>{{ p.categoryName }}</td>
+        <td>
+          <button class="btn btn-sm btn-success me-1" (click)="approve(p.id)">Approve</button>
+          <button class="btn btn-sm btn-danger" (click)="reject(p.id)">Reject</button>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>
+

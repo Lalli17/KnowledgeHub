@@ -1,1 +1,17 @@
-<p>login works!</p>
+<div class="card mx-auto" style="max-width:420px">
+  <div class="card-body">
+    <h5 class="card-title">Login</h5>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="mb-3">
+        <label>Email</label>
+        <input class="form-control" formControlName="email" />
+      </div>
+      <div class="mb-3">
+        <label>Password</label>
+        <input type="password" class="form-control" formControlName="password" />
+      </div>
+      <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+      <button class="btn btn-primary" type="submit">Login</button>
+    </form>
+  </div>
+</div>
