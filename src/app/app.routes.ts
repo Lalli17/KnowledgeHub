@@ -23,14 +23,20 @@ export const routes: Routes = [
   { path: 'register', component: Register },
 
   // Routes that require a user to be logged in
-  { path: 'submit', component: SubmitUrl, canActivate: [authGuard] },
+  { path: 'submit', component: SubmitUrl}, //canActivate: [authGuard] },
 
   // Routes that require a user to be an Admin
-  { path: 'category', component: Category, canActivate: [adminGuard] },
-  { path: 'list-categories', component: ListCategories, canActivate: [adminGuard] },
-  { path: 'approve-urls', component: ApproveUrlsComponent, canActivate: [adminGuard] },
-  { path: 'list-users', component: ListUsers, canActivate: [adminGuard] },
+  { path: 'category', component: Category},// canActivate: [adminGuard] },
+  { path: 'list-categories', component: ListCategories},// canActivate: [adminGuard] },
+  { path: 'approve-urls', component: ApproveUrlsComponent},// canActivate: [adminGuard] },
+  { path: 'list-users', component: ListUsers},// canActivate: [adminGuard] },
 
   // Fallback route for any unknown paths
   { path: '**', redirectTo: '' }
 ];
+
+
+
+
+
+

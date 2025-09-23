@@ -1,36 +1,52 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],  // <-- add ReactiveFormsModule here
-  templateUrl: './login.html'
+  templateUrl: './login.html',
+  styleUrls: ['./login.css'],
+  imports: [CommonModule,ReactiveFormsModule] // <-- Add CommonModule here if needed
 })
 export class LoginComponent {
-  form: FormGroup;
+  loading = false;
   error = '';
+
+  loginForm: any;
 
   constructor(
     private fb: FormBuilder,
-    private auth: AuthService,
+    private authService: AuthService,
     private router: Router
   ) {
-    this.form = this.fb.group({
-      email: [''],
-      password: ['']
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required]
     });
   }
 
-  submit() {
-    this.error = '';
-    const { email, password } = this.form.value;
-    this.auth.login(email, password).subscribe({
-      next: () => this.router.navigate(['/']),
-      error: err => this.error = err?.error?.message || 'Login failed'
+  login() {
+    if (this.loginForm.invalid) return;
+
+    this.loading = true;
+    const { email, password } = this.loginForm.value;
+    this.authService.login(email ?? '', password ?? '').subscribe({
+      next: (res: any) => {
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('role', res.role);
+
+        if (res.role === 'A') {
+          this.router.navigate(['/approve-urls']);
+        } else {
+          this.router.navigate(['/submit-url']);
+        }
+      },
+      error: () => {
+        this.error = 'Invalid email or password';
+        this.loading = false;
+      }
     });
   }
 }
