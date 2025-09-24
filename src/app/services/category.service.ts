@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environments';
 
 export interface Category {
   id: number;
@@ -13,7 +14,7 @@ export interface Category {
   providedIn: 'root'
 })
 export class CategoryService {
-  private apiUrl = 'https://localhost:7298/api/Category'; // ⚠️ update with your backend URL
+  private apiUrl = `${environment.apiBaseUrl}/Category`;
 
   constructor(private http: HttpClient) { }
 

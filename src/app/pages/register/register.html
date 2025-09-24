@@ -1,6 +1,7 @@
 <div class="container d-flex justify-content-center align-items-center vh-100">
-  <div class="card shadow-lg p-4 register-container">
-    <h2 class="text-center mb-4">Register</h2>
+  <div class="card shadow-lg p-4 register-container w-100">
+    <h2 class="text-center mb-1">Create your account</h2>
+    <p class="text-muted text-center mb-4">It only takes a minute</p>
 
     <form [formGroup]="registerForm" (ngSubmit)="register()">
       <!-- Name -->
@@ -60,8 +61,13 @@
 
       <!-- Submit -->
       <button class="btn btn-success w-100" [disabled]="registerForm.invalid">
-        Register
+        Create account
       </button>
     </form>
+
+    <div class="text-center mt-3 small">
+      Already have an account?
+      <a routerLink="/login" class="text-decoration-none">Login</a>
+    </div>
   </div>
 </div>

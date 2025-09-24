@@ -1,4 +1,4 @@
-<h3>Approve URLs</h3>
+<h3>Review Articles</h3>
 <table class="table table-striped">
   <thead>
     <tr>
@@ -6,9 +6,8 @@
         <input type="checkbox" (change)="toggleAll($event)" /> <!-- master checkbox -->
       </th>
       <th>Title</th>
-      <th>URL</th>
       <th>Category</th>
-      <th>Status</th>
+      <th>Submitted On</th>
     </tr>
   </thead>
   <tbody>
@@ -20,16 +19,22 @@
             [(ngModel)]="p.selected" 
             name="selected{{p.articleIds[0]}}" />
         </td>
-        <td>{{ p.title }}</td>
-        <td><a [href]="p.url" target="_blank">Open</a></td>
-        <td>{{ p.categoryName }}</td>
-        <td>{{ p.action }}</td>
+        <td>
+          <a [href]="p.url" target="_blank" rel="noopener noreferrer">{{ p.title }}</a>
+        </td>
+        <td>{{ p.categoryName || '-' }}</td>
+        <td>{{ p.dateSubmitted ? (p.dateSubmitted | date:'medium') : '-' }}</td>
       </tr>
     }
   </tbody>
+  <tfoot>
+    <tr>
+      <td colspan="4">
+        <div class="mt-2 d-flex">
+          <button class="btn btn-success me-2" (click)="bulkApprove()" [disabled]="!anySelected">Approve Selected</button>
+          <button class="btn btn-danger" (click)="bulkReject()" [disabled]="!anySelected">Reject Selected</button>
+        </div>
+      </td>
+    </tr>
+  </tfoot>
 </table>
-
-<div class="mt-2">
-  <button class="btn btn-success me-2" (click)="bulkApprove()">Approve Selected</button>
-  <button class="btn btn-danger" (click)="bulkReject()">Reject Selected</button>
-</div>

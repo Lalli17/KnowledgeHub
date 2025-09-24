@@ -50,7 +50,11 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './approve-urls.html',
 })
 export class ApproveUrlsComponent implements OnInit {
-  pending: (PendingUrl & { selected?: boolean; categoryName?: string })[] = [];
+  pending: (PendingUrl & { selected?: boolean })[] = [];
+
+  get anySelected() {
+    return this.pending?.some(p => !!p.selected);
+  }
 
   constructor(private api: ApiService) {}
 
@@ -60,8 +64,15 @@ export class ApproveUrlsComponent implements OnInit {
 
   load() {
     this.api.getPendingUrls().subscribe(p => {
-      // ensure each item has `selected` property
-      this.pending = p.map(item => ({ ...item, selected: false }));
+      // Map possible backend field names to our UI model and add `selected`
+      this.pending = p.map(item => ({
+        ...item,
+        // normalize possible variants if backend uses different casings
+        categoryName: (item as any).categoryName ?? (item as any).category?.categoryName ?? (item as any).CategoryName,
+        dateSubmitted: (item as any).dateSubmitted ?? (item as any).submittedOn ?? (item as any).DateSubmitted,
+        status: (item as any).status ?? (item as any).Status ?? item.action,
+        selected: false,
+      }));
     });
   }
 

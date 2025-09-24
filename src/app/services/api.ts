@@ -92,7 +92,12 @@ export interface PendingUrl {
   articleIds: number[]; 
   title: string; 
   url: string; 
-  action: string;   // ✅ added to match backend
+  // Backends may return either `status` (enum/string) or `action` (string)
+  status?: string | number; 
+  action?: string;   
+  // From Article entity
+  categoryName?: string; // projected from Category.CategoryName
+  dateSubmitted?: string; // ISO date from Article.DateSubmitted
 }
 
 export interface ReviewPayload { 
