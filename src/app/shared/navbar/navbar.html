@@ -11,7 +11,7 @@
         <li class="nav-item"><a class="nav-link" routerLink="/browse">Browse URLs</a></li>
         <li class="nav-item" *ngIf="auth.isLoggedIn()"><a class="nav-link" routerLink="/submit">Submit URL</a></li>
         <li class="nav-item" *ngIf="auth.isAdmin()"><a class="nav-link" routerLink="/approve-urls">Approve URLs</a></li>
-        <li class="nav-item" *ngIf="auth.isAdmin()"><a class="nav-link" routerLink="/list-categories">Categories</a></li>
+        <li class="nav-item" *ngIf="auth.isAdmin()"><a class="nav-link" routerLink="/category/list">Categories</a></li>
         <li class="nav-item" *ngIf="auth.isAdmin()"><a class="nav-link" routerLink="/list-users">Users</a></li>
       </ul>
 
@@ -20,7 +20,7 @@
         <li class="nav-item" *ngIf="!auth.isLoggedIn()"><a class="nav-link" routerLink="/register">Register</a></li>
         <li class="nav-item dropdown" *ngIf="auth.isLoggedIn()">
           <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown">
-            {{ auth.getCurrentUser()?.email }}
+            {{ auth.getCurrentUser()?.name}}
           </a>
           <ul class="dropdown-menu dropdown-menu-end">
             <li><a class="dropdown-item" (click)="logout()">Logout</a></li>
@@ -29,4 +29,4 @@
       </ul>
     </div>
   </div>
-</nav>
+</nav> 

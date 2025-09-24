@@ -28,11 +28,11 @@ export const routes: Routes = [
   { path: 'submit', component: SubmitUrl}, //canActivate: [authGuard] },
 
   // Routes that require a user to be an Admin
-  { path: 'approve-urls', component: ApproveUrlsComponent},// canActivate: [adminGuard] },
-  { path: 'list-users', component: ListUsers},// canActivate: [adminGuard] },
+  { path: 'approve-urls', component: ApproveUrlsComponent, canActivate: [adminGuard] },
+  { path: 'list-users', component: ListUsers, canActivate: [adminGuard] },
   { path: 'category', component: category },
-  { path: 'category/list', component: ListCategories},//canActivate: [adminGuard] },
-  { path: 'category/list/edit/:id', component: category},// canActivate: [adminGuard] },
+  { path: 'category/list', component: ListCategories,canActivate: [adminGuard] },
+  { path: 'category/list/edit/:id', component: category, canActivate: [adminGuard] },
 
   // Fallback route for any unknown paths
   { path: '**', redirectTo: '' }
