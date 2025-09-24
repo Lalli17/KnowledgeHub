@@ -1,22 +1,8 @@
-<!-- <div class="container">
-  <h2>{{ isEdit ? 'Edit Category' : 'Add Category' }}</h2>
-
-  <form (ngSubmit)="saveCategory()">
-    <label>Name:</label>
-    <input [(ngModel)]="category.name" name="name" required />
-
-    <label>Description:</label>
-    <input [(ngModel)]="category.description" name="description" />
-
-    <button type="submit">{{ isEdit ? 'Update' : 'Create' }}</button>
-    <button type="button" (click)="router.navigate(['/categories'])">Cancel</button>
-  </form>
-</div> -->
-
 <div class="category-form-container">
   <h2 class="form-title">{{ isEdit ? 'Edit Category' : 'Add Category' }}</h2>
 
   <form (ngSubmit)="saveCategory()" #categoryForm="ngForm">
+    <!-- Name -->
     <div class="form-group">
       <label for="name">Name:</label>
       <input
@@ -24,20 +10,39 @@
         [(ngModel)]="category.categoryName"
         name="categoryName"
         required
+        minlength="3"
+        maxlength="50"
         class="form-control"
+        #name="ngModel"
       />
+      <div class="error" *ngIf="name.invalid && name.touched">
+        <small *ngIf="name.errors?.['required']">Name is required.</small>
+        <small *ngIf="name.errors?.['minlength']">Name must be at least 3 characters.</small>
+        <small *ngIf="name.errors?.['maxlength']">Name cannot exceed 50 characters.</small>
+      </div>
     </div>
 
+    <!-- Description -->
     <div class="form-group">
       <label for="description">Description:</label>
       <input
         id="description"
         [(ngModel)]="category.categoryDescription"
         name="categoryDescription"
+        required
+        minlength="5"
+        maxlength="500"
         class="form-control"
+        #desc="ngModel"
       />
+      <div class="error" *ngIf="desc.invalid && desc.touched">
+        <small *ngIf="desc.errors?.['required']">Description is required.</small>
+        <small *ngIf="desc.errors?.['minlength']">Description must be at least 5 characters.</small>
+        <small *ngIf="desc.errors?.['maxlength']">Description cannot exceed 500 characters.</small>
+      </div>
     </div>
 
+    <!-- Actions -->
     <div class="form-actions">
       <button type="submit" class="btn btn-primary" [disabled]="!categoryForm.valid">
         {{ isEdit ? 'Update' : 'Create' }}
@@ -48,3 +53,4 @@
     </div>
   </form>
 </div>
+
