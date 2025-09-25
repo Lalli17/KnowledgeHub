@@ -73,12 +73,16 @@ export interface Category {
   categoryDescription: string; 
 }
 
-export interface BrowseUrl { 
-  title: string; 
-  url: string; 
-  description: string; 
-  postedBy: string; 
-  categoryName: string; 
+export interface BrowseUrl {
+  id: number;
+  title: string;
+  url: string;
+  description: string;
+  postedBy: string;
+  categoryName: string;
+  status?: string;
+  DateSubmitted?: Date;
+  updatedAt?: Date;
 }
 
 export interface SubmitUrlPayload { 
@@ -116,8 +120,13 @@ export class ApiService {
   }
 
   // URLs
-  browseUrls(): Observable<BrowseUrl[]> { 
-    return this.http.get<BrowseUrl[]>(`${this.base}/ArticleReview/browse`); 
+  browseUrls(): Observable<BrowseUrl[]> {
+    return this.http.get<BrowseUrl[]>(`${this.base}/ArticleReview/browse`);
+  }
+
+  // Add method to get dashboard analytics
+  getDashboardAnalytics(): Observable<any> {
+    return this.http.get<any>(`${this.base}/Dashboard/analytics`);
   }
 
   submitUrl(payload: SubmitUrlPayload): Observable<any> { 

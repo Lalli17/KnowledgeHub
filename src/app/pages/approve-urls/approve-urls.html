@@ -3,7 +3,7 @@
   <thead>
     <tr>
       <th>
-        <input type="checkbox" (change)="toggleAll($event)" /> <!-- master checkbox -->
+        <input type="checkbox" [checked]="allSelected" (change)="toggleAll($event)" /> <!-- master checkbox -->
       </th>
       <th>Title</th>
       <th>URL</th>
@@ -12,20 +12,18 @@
     </tr>
   </thead>
   <tbody>
-    @for (p of pending; track p.articleIds[0]) {
-      <tr>
-        <td>
-          <input 
-            type="checkbox" 
-            [(ngModel)]="p.selected" 
-            name="selected{{p.articleIds[0]}}" />
-        </td>
-        <td>{{ p.title }}</td>
-        <td><a [href]="p.url" target="_blank">Open</a></td>
-        <td>{{ p.categoryName }}</td>
-        <td>{{ p.action }}</td>
-      </tr>
-    }
+    <tr *ngFor="let p of pending; trackBy: trackByFn">
+      <td>
+        <input 
+          type="checkbox" 
+          [(ngModel)]="p.selected" 
+          name="selected{{p.title}}" />
+      </td>
+      <td>{{ p.title }}</td>
+      <td><a [href]="p.url" target="_blank">Open</a></td>
+      <td>{{ p.categoryName }}</td>
+      <td>{{ p.action }}</td>
+    </tr>
   </tbody>
 </table>
 
