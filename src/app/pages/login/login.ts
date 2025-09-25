@@ -35,10 +35,7 @@ export class LoginComponent {
     const { email, password } = this.loginForm.value;
     this.authService.login(email ?? '', password ?? '').subscribe({
       next: (res: any) => {
-        localStorage.setItem('token', res.token);
-        localStorage.setItem('role', res.role);
-
-        if (res.role === 'A') {
+        if (this.authService.isAdmin()) {
           this.router.navigate(['/approve-urls']);
         } else {
           this.router.navigate(['/submit-url']);

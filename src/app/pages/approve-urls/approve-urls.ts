@@ -1,109 +1,149 @@
-// import { Component, OnInit } from '@angular/core';
-// import { ApiService } from '../../services/api';
-// import { CommonModule } from '@angular/common';
-// import { FormsModule } from '@angular/forms';
-
-// @Component({
-//   selector: 'app-approve-urls',
-//   standalone: true, // <-- THIS IS THE FIX
-//   imports: [CommonModule,FormsModule],
-//   templateUrl: './approve-urls.html',
-// })
-// export class ApproveUrlsComponent implements OnInit {
-//   pending: any[] = [];
-
-//   constructor(private api: ApiService) {}
-
-//   ngOnInit() {
-//     this.load();
-//   }
-
-// load() {
-//   this.api.getPendingUrls().subscribe(p => this.pending = p);
-// }
-
-// // loadByCategory(id: number) {
-// //   this.api.getPendingUrls(id).subscribe(p => this.pending = p);
-// // }
-
-
-//   // The code below will now work because ApiService has these methods again
-//   approve(id: number) {
-//     this.api.approveUrl(id).subscribe(() => this.load());
-//   }
-
-//   reject(id: number) {
-//     this.api.rejectUrl(id).subscribe(() => this.load());
-//   }
-// }
-
-
 import { Component, OnInit } from '@angular/core';
-import { ApiService, PendingUrl } from '../../services/api';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import emailjs from '@emailjs/browser';
+import { ApiService } from '../../services/api';
+
+interface PendingUrl {
+  id: number;
+  title: string;
+  url: string;
+  authorName?: string;
+  authorEmail?: string;
+  categoryName?: string;
+  action?: string;
+  dateSubmitted?: string;
+}
 
 @Component({
   selector: 'app-approve-urls',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './approve-urls.html',
+  styleUrls: ['./approve-urls.css']
 })
 export class ApproveUrlsComponent implements OnInit {
   pending: (PendingUrl & { selected?: boolean })[] = [];
+  successMessage = '';
+  error = '';
+  allSelected = false;
 
   get anySelected() {
     return this.pending?.some(p => !!p.selected);
   }
 
-  constructor(private api: ApiService) {}
+  constructor(private apiService: ApiService) {}
 
   ngOnInit() {
-    this.load();
+    this.loadPendingUrls();
   }
 
-  load() {
-    this.api.getPendingUrls().subscribe(p => {
-      // Map possible backend field names to our UI model and add `selected`
-      this.pending = p.map(item => ({
-        ...item,
-        // normalize possible variants if backend uses different casings
-        categoryName: (item as any).categoryName ?? (item as any).category?.categoryName ?? (item as any).CategoryName,
-        dateSubmitted: (item as any).dateSubmitted ?? (item as any).submittedOn ?? (item as any).DateSubmitted,
-        status: (item as any).status ?? (item as any).Status ?? item.action,
-        selected: false,
-      }));
+  loadPendingUrls() {
+    this.apiService.getPendingUrls().subscribe({
+      next: (p) => {
+        // Map possible backend field names to our UI model and add `selected`
+        this.pending = p.map(item => ({
+          id: item.articleIds ? item.articleIds[0] : 0,
+          title: item.title,
+          url: item.url,
+          authorName: (item as any).authorName || '',
+          authorEmail: (item as any).authorEmail || '',
+          categoryName: ((item as any).categoryName ?? (item as any).category?.categoryName ?? (item as any).CategoryName) || '',
+          action: item.action,
+          dateSubmitted: (item as any).dateSubmitted ?? (item as any).submittedOn ?? (item as any).DateSubmitted,
+          selected: false,
+        }));
+        this.allSelected = false;
+      },
+      error: (err) => {
+        console.error('Error loading pending URLs:', err);
+        this.error = 'Failed to load pending URLs.';
+      }
     });
   }
 
   // --- Bulk selection ---
   toggleAll(event: any) {
     const checked = event.target.checked;
+    this.allSelected = checked;
     this.pending.forEach(item => (item.selected = checked));
   }
 
+  trackByFn(index: number, item: PendingUrl & { selected?: boolean }) {
+    return item.id;
+  }
+
   bulkApprove() {
-    const ids = this.pending.filter(p => p.selected).map(p => p.articleIds[0]);
-    if (ids.length > 0) {
-      this.api.reviewUrls({ articleIds: ids, action: 'Approve' })
-        .subscribe(() => this.load());
+    this.successMessage = '';
+    this.error = '';
+    const selectedItems = this.pending.filter(p => p.selected);
+    if (selectedItems.length === 0) {
+      this.error = 'No items selected for approval.';
+      return;
     }
+    const articleIds = selectedItems.map(item => item.id);
+    this.apiService.reviewUrls({ articleIds, action: 'Approve' }).subscribe({
+      next: () => {
+        this.successMessage = 'Selected URLs approved!';
+        this.loadPendingUrls(); // Reload the list
+        // EmailJS integration for approval
+        selectedItems.forEach(item => {
+          const authorParams = {
+            title: item.title,
+            url: item.url,
+            author_name: item.authorName,
+            email: item.authorEmail,
+            status: 'approved'
+          };
+          emailjs.send(
+            'service_11muu58',         // Service ID
+            'template_l6n2h4i',        // Author template ID
+            authorParams,
+            'cUMIAU-wWfWG8eTnT'        // Public key
+          ).catch(err => console.error('EmailJS error:', err));
+        });
+      },
+      error: (err) => {
+        console.error('Approval error:', err);
+        this.error = 'Failed to approve URLs.';
+      }
+    });
   }
 
   bulkReject() {
-    const ids = this.pending.filter(p => p.selected).map(p => p.articleIds[0]);
-    if (ids.length > 0) {
-      this.api.reviewUrls({ articleIds: ids, action: 'Reject' })
-        .subscribe(() => this.load());
+    this.successMessage = '';
+    this.error = '';
+    const selectedItems = this.pending.filter(p => p.selected);
+    if (selectedItems.length === 0) {
+      this.error = 'No items selected for rejection.';
+      return;
     }
-  }
-
-  // --- Single Approve/Reject (still available) ---
-  approve(id: number) {
-    this.api.approveUrl(id).subscribe(() => this.load());
-  }
-
-  reject(id: number) {
-    this.api.rejectUrl(id).subscribe(() => this.load());
+    const articleIds = selectedItems.map(item => item.id);
+    this.apiService.reviewUrls({ articleIds, action: 'Reject' }).subscribe({
+      next: () => {
+        this.successMessage = 'Selected URLs rejected!';
+        this.loadPendingUrls(); // Reload the list
+        // EmailJS integration for rejection
+        selectedItems.forEach(item => {
+          const authorParams = {
+            title: item.title,
+            url: item.url,
+            author_name: item.authorName,
+            email: item.authorEmail,
+            status: 'rejected'
+          };
+          emailjs.send(
+            'service_11muu58',         // Service ID
+            'template_l6n2h4i',        // Author template ID
+            authorParams,
+            'cUMIAU-wWfWG8eTnT'        // Public key
+          ).catch(err => console.error('EmailJS error:', err));
+        });
+      },
+      error: (err) => {
+        console.error('Rejection error:', err);
+        this.error = 'Failed to reject URLs.';
+      }
+    });
   }
 }

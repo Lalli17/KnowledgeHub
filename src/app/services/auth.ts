@@ -27,13 +27,19 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  login(email: string, password: string): Observable<LoginResp> {
-    return this.http.post<LoginResp>(`${environment.apiBaseUrl}/auth/login`, { email, password })
-      .pipe(tap(res => {
+  login(email: string, password: string): Observable<any> {
+    return this.http.post(`${environment.apiBaseUrl}/auth/login`, { email, password })
+      .pipe(tap((res: any) => {
         if (res && res.token) {
           localStorage.setItem(this.tokenKey, res.token);
-          // THIS IS THE FIX: We now store the full user object, including the 'roles' array.
-          localStorage.setItem(this.userKey, JSON.stringify({ email: res.email, name: res.name, roles: res.roles }));
+          // Handle if backend returns 'role' as string or 'roles' as array
+          let roles: string[] = [];
+          if (res.roles && Array.isArray(res.roles)) {
+            roles = res.roles;
+          } else if (res.role) {
+            roles = [res.role]; // Assume 'A' for admin, etc.
+          }
+          localStorage.setItem(this.userKey, JSON.stringify({ email: res.email, name: res.name, roles }));
         }
       }));
   }
@@ -64,10 +70,10 @@ export class AuthService {
   // This function is now more robust and correctly checks the 'roles' array.
   isAdmin(): boolean {
     const user = this.getCurrentUser();
-    // Check if a user exists, if they have a 'roles' property, and if that array includes 'Admin'.
+    // Check if a user exists, if they have a 'roles' property, and if that array includes 'Admin' or 'A'.
     if (!user || !user.roles) {
       return false;
     }
-    return user.roles.includes('Admin');
+    return user.roles.includes('Admin') || user.roles.includes('A');
   }
 }

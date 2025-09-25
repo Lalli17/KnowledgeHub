@@ -1,9 +1,11 @@
 <h3>Review Articles</h3>
+<div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+<div *ngIf="error" class="alert alert-danger">{{ error }}</div>
 <table class="table table-striped">
   <thead>
     <tr>
       <th>
-        <input type="checkbox" (change)="toggleAll($event)" /> <!-- master checkbox -->
+        <input type="checkbox" [checked]="allSelected" (change)="toggleAll($event)" /> <!-- master checkbox -->
       </th>
       <th>Title</th>
       <th>Category</th>
@@ -11,21 +13,19 @@
     </tr>
   </thead>
   <tbody>
-    @for (p of pending; track p.articleIds[0]) {
-      <tr>
-        <td>
-          <input 
-            type="checkbox" 
-            [(ngModel)]="p.selected" 
-            name="selected{{p.articleIds[0]}}" />
+    <tr *ngFor="let p of pending; trackBy: trackByFn">
+      <td>
+        <input 
+          type="checkbox" 
+          [(ngModel)]="p.selected" 
+          name="selected{{p.title}}" />
+      </td>
+      <td>
+        <a [href]="p.url" target="_blank" rel="noopener noreferrer">{{ p.title }}</a>
         </td>
-        <td>
-          <a [href]="p.url" target="_blank" rel="noopener noreferrer">{{ p.title }}</a>
-        </td>
-        <td>{{ p.categoryName || '-' }}</td>
-        <td>{{ p.dateSubmitted ? (p.dateSubmitted | date:'medium') : '-' }}</td>
-      </tr>
-    }
+      <td>{{ p.categoryName || '-' }}</td>
+      <td>{{ p.dateSubmitted ? (p.dateSubmitted | date:'medium') : '-' }}</td>
+    </tr>
   </tbody>
   <tfoot>
     <tr>

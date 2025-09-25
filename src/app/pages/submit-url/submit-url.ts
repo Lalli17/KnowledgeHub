@@ -1,80 +1,71 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // We must import FormsModule to use ngModel in the template
-import { RouterModule } from '@angular/router';
-
-// Import our service and the data models it uses
-import { ApiService, Category, SubmitUrlPayload } from '../../services/api';
+import { FormsModule } from '@angular/forms';
+import emailjs from '@emailjs/browser';
+import { CategoryService, Category } from '../../services/category.service';
+import { ApiService } from '../../services/api';
 
 @Component({
   selector: 'app-submit-url',
-  // This component is standalone
   standalone: true,
-  // We need CommonModule for *ngIf/*ngFor, and FormsModule for the form
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './submit-url.html',
-  styleUrl: './submit-url.css'
+  styleUrls: ['./submit-url.css']
 })
-export class SubmitUrl implements OnInit {
-  // This array will hold the categories for the dropdown
+export class SubmitUrlComponent implements OnInit {
+  model = { title: '', url: '', description: '', categoryId: 0, authorName: '', authorEmail: '' };
   categories: Category[] = [];
-
-  // Properties to manage UI state (loading, errors, success)
   isLoading = false;
-  error: string | null = null;
-  successMessage: string | null = null;
+  successMessage = '';
+  error = '';
 
-  // The 'model' object is bound to our form fields using ngModel
-  model: SubmitUrlPayload = {
-    title: '',
-    url: '',
-    description: '',
-    categoryId: 0, // Default to 0, which is an invalid/placeholder selection
-  };
+  constructor(private categoryService: CategoryService, private apiService: ApiService) {}
 
-  constructor(private apiService: ApiService) {}
-
-  // When the component loads, fetch the list of categories for the dropdown
-  ngOnInit(): void {
+  ngOnInit() {
     this.loadCategories();
   }
 
-  loadCategories(): void {
-    this.apiService.getCategories().subscribe({
+  loadCategories() {
+    this.categoryService.getAll().subscribe({
       next: (data) => {
         this.categories = data;
       },
       error: (err) => {
-        this.error = 'Could not load categories. You may need to log in as an Admin to create some first.';
-        console.error('Error fetching categories:', err);
+        console.error('Error loading categories:', err);
       }
     });
   }
 
-  // This function is called when the form is submitted
-  onSubmit(): void {
-    // Basic validation
-    if (this.model.categoryId === 0) {
-      this.error = 'Please select a category.';
-      return;
-    }
-
-    // Reset UI state before making the API call
+  onSubmit() {
     this.isLoading = true;
-    this.error = null;
-    this.successMessage = null;
-
     this.apiService.submitUrl(this.model).subscribe({
       next: () => {
-        this.successMessage = 'URL submitted successfully! It will be reviewed by an admin.';
+        this.successMessage = 'URL submitted successfully!';
         this.isLoading = false;
-        // Reset the form to its initial state for another submission
-        this.model = { title: '', url: '', description: '', categoryId: 0 };
+        this.error = '';
+        this.model = { title: '', url: '', description: '', categoryId: 0, authorName: '', authorEmail: '' };
+
+        // EmailJS integration - send to admin
+        const adminParams = {
+          title: this.model.title,
+          url: this.model.url,
+          description: this.model.description,
+          category: this.model.categoryId,
+          author_name: this.model.authorName,
+          author_email: this.model.authorEmail
+        };
+
+        emailjs.send(
+          'service_11muu58',         // Service ID
+          'template_ylv9ay6',        // Admin template ID
+          adminParams,
+          'cUMIAU-wWfWG8eTnT'        // Public key
+        ).catch(err => console.error('EmailJS error:', err));
       },
       error: (err) => {
-        this.error = 'Submission failed. Please check your input and try again.';
+        console.error('Submission error:', err);
+        this.error = 'Failed to submit URL.';
         this.isLoading = false;
-        console.error('Error submitting URL:', err);
       }
     });
   }
