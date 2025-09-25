@@ -1,40 +1,44 @@
 <h3>Review Articles</h3>
 <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
 <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th>
-        <input type="checkbox" [checked]="allSelected" (change)="toggleAll($event)" /> <!-- master checkbox -->
-      </th>
-      <th>Title</th>
-      <th>Category</th>
-      <th>Submitted On</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let p of pending; trackBy: trackByFn">
-      <td>
-        <input 
-          type="checkbox" 
-          [(ngModel)]="p.selected" 
-          name="selected{{p.title}}" />
-      </td>
-      <td>
-        <a [href]="p.url" target="_blank" rel="noopener noreferrer">{{ p.title }}</a>
+
+<ng-container *ngIf="(pending?.length ?? 0) > 0; else emptyState">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>
+          <input type="checkbox" [checked]="allSelected" (change)="toggleAll($event)" /> <!-- master checkbox -->
+        </th>
+        <th>Title</th>
+        <th>Category</th>
+        <th>Submitted</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let p of pending; trackBy: trackByFn">
+        <td>
+          <input 
+            type="checkbox" 
+            [(ngModel)]="p.selected" 
+            name="selected{{p.title}}" />
         </td>
-      <td>{{ p.categoryName || '-' }}</td>
-      <td>{{ p.dateSubmitted ? (p.dateSubmitted | date:'medium') : '-' }}</td>
-    </tr>
-  </tbody>
-  <tfoot>
-    <tr>
-      <td colspan="4">
-        <div class="mt-2 d-flex">
-          <button class="btn btn-success me-2" (click)="bulkApprove()" [disabled]="!anySelected">Approve Selected</button>
-          <button class="btn btn-danger" (click)="bulkReject()" [disabled]="!anySelected">Reject Selected</button>
-        </div>
-      </td>
-    </tr>
-  </tfoot>
-</table>
+        <td>
+          <a [href]="p.url" target="_blank" rel="noopener noreferrer">{{ p.title }}</a>
+          </td>
+        <td>{{ p.categoryName || '-' }}</td>
+        <td>{{ p.dateSubmitted ? timeAgo(p.dateSubmitted) : '-' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Actions at bottom outside the table -->
+  <div class="mt-3 d-flex">
+    <button class="btn btn-success me-2" (click)="bulkApprove()" [disabled]="!anySelected">Approve Selected</button>
+    <button class="btn btn-danger" (click)="bulkReject()" [disabled]="!anySelected">Reject Selected</button>
+  </div>
+</ng-container>
+
+<ng-template #emptyState>
+  <div class="alert alert-info mt-3">No articles for reviewing.</div>
+  
+</ng-template>

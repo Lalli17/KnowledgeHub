@@ -27,3 +27,13 @@ export const adminGuard: CanActivateFn = () => {
   // If not an admin, redirect to the home page
   return router.parseUrl('/');
 };
+
+// Guard to redirect admins away from Home to Dashboard
+export const redirectAdminFromHomeGuard: CanActivateFn = () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+  if (authService.isAdmin()) {
+    return router.parseUrl('/dashboard');
+  }
+  return true;
+};

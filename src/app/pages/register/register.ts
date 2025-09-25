@@ -43,7 +43,8 @@ export class Register {
     if (this.registerForm.invalid) return;
 
     const { name, email, password } = this.registerForm.value; // exclude confirmPassword
-    this.authService.register({ name, email, password }).subscribe({
+    // Backend expects roles: string[]
+    this.authService.register({ name, email, password, roles: ['User'] }).subscribe({
       next: () => this.router.navigate(['/login']),
       error: () => (this.error = 'Registration failed. Try again.')
     });

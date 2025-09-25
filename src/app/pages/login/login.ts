@@ -36,7 +36,7 @@ export class LoginComponent {
     this.authService.login(email ?? '', password ?? '').subscribe({
       next: (res: any) => {
         if (this.authService.isAdmin()) {
-          this.router.navigate(['/approve-urls']);
+          this.router.navigate(['/dashboard']);
         } else {
           this.router.navigate(['/submit-url']);
         }

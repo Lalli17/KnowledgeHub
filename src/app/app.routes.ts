@@ -13,11 +13,11 @@ import { ListUsers } from './pages/list-users/list-users';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 
 // Import the functional guards
-import { authGuard, adminGuard } from './services/auth.guard';
+import { authGuard, adminGuard, redirectAdminFromHomeGuard } from './services/auth.guard';
 
 export const routes: Routes = [
   // Public routes
-  { path: '', component: Home },
+  { path: '', component: Home, canActivate: [redirectAdminFromHomeGuard] },
   { path: 'browse', component: BrowseUrls },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: Register },

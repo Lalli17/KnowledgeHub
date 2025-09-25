@@ -1,9 +1,22 @@
 <div class="container mt-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1>Browse URLs</h1>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Browse Articles</h1>
     <a routerLink="/submit" class="btn btn-primary">Submit a New URL</a>
   </div>
-  <p class="lead">Here are the latest approved links shared by the community.</p>
+  <p class="lead">Discover gems—pick a category or search to jump right in.</p>
+
+  <!-- Filters -->
+  <div class="row g-2 mb-4">
+    <div class="col-md-4">
+      <select class="form-select" [(ngModel)]="selectedCategoryName">
+        <option value="">All Categories</option>
+        <option *ngFor="let c of categories" [value]="c.categoryName">{{ c.categoryName }}</option>
+      </select>
+    </div>
+    <div class="col-md-8">
+      <input type="text" class="form-control" placeholder="Search articles..." [(ngModel)]="searchTerm" />
+    </div>
+  </div>
 
   <!-- Show a loading spinner while data is being fetched -->
   <div *ngIf="isLoading" class="text-center py-5">
@@ -17,9 +30,9 @@
 
   <!-- Once loaded, display the articles or a "not found" message -->
   <div *ngIf="!isLoading && !error">
-    <div class="row" *ngIf="articles.length > 0; else noArticles">
+    <div class="row" *ngIf="filteredArticles.length > 0; else noArticles">
       <!-- Loop through each article and create a card for it -->
-      <div *ngFor="let article of articles" class="col-md-6 col-lg-4 mb-4">
+      <div *ngFor="let article of filteredArticles" class="col-md-6 col-lg-4 mb-4">
         <div class="card h-100">
           <div class="card-body d-flex flex-column">
             <h5 class="card-title">{{ article.title }}</h5>
@@ -37,8 +50,8 @@
     <!-- This block shows if the articles array is empty -->
     <ng-template #noArticles>
       <div class="text-center py-5">
-        <h3>No URLs Found</h3>
-        <p>There are no approved articles to display yet. Why not be the first to <a routerLink="/submit">submit one</a>?</p>
+        <h3>No articles found</h3>
+        <p>Try clearing filters or <a routerLink="/submit">submit one</a>.</p>
       </div>
     </ng-template>
   </div>
