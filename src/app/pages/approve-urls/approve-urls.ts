@@ -4,15 +4,15 @@ import { FormsModule } from '@angular/forms';
 import emailjs from '@emailjs/browser';
 import { ApiService } from '../../services/api';
 
-interface PendingItem {
-  selected: boolean;
+interface PendingUrl {
   id: number;
   title: string;
   url: string;
-  authorName: string;
-  authorEmail: string;
-  categoryName: string;
-  action: string;
+  authorName?: string;
+  authorEmail?: string;
+  categoryName?: string;
+  action?: string;
+  dateSubmitted?: string;
 }
 
 @Component({
@@ -23,10 +23,14 @@ interface PendingItem {
   styleUrls: ['./approve-urls.css']
 })
 export class ApproveUrlsComponent implements OnInit {
-  pending: PendingItem[] = [];
+  pending: (PendingUrl & { selected?: boolean })[] = [];
   successMessage = '';
   error = '';
   allSelected = false;
+
+  get anySelected() {
+    return this.pending?.some(p => !!p.selected);
+  }
 
   constructor(private apiService: ApiService) {}
 
@@ -36,32 +40,37 @@ export class ApproveUrlsComponent implements OnInit {
 
   loadPendingUrls() {
     this.apiService.getPendingUrls().subscribe({
-      next: (data) => {
-        this.pending = data.map(item => ({
-          selected: false,
-          id: item.articleIds[0], // Assuming first id
+      next: (p) => {
+        // Map possible backend field names to our UI model and add `selected`
+        this.pending = p.map(item => ({
+          id: item.articleIds ? item.articleIds[0] : 0,
           title: item.title,
           url: item.url,
-          authorName: '', // Assuming not provided, or adjust based on backend
-          authorEmail: '',
-          categoryName: '', // Assuming not provided
-          action: item.action
+          authorName: (item as any).authorName || '',
+          authorEmail: (item as any).authorEmail || '',
+          categoryName: ((item as any).categoryName ?? (item as any).category?.categoryName ?? (item as any).CategoryName) || '',
+          action: item.action,
+          dateSubmitted: (item as any).dateSubmitted ?? (item as any).submittedOn ?? (item as any).DateSubmitted,
+          selected: false,
         }));
+        this.allSelected = false;
       },
       error: (err) => {
         console.error('Error loading pending URLs:', err);
+        this.error = 'Failed to load pending URLs.';
       }
     });
   }
 
-  toggleAll(event: Event) {
-    const isChecked = (event.target as HTMLInputElement).checked;
-    this.allSelected = isChecked;
-    this.pending.forEach(item => item.selected = isChecked);
+  // --- Bulk selection ---
+  toggleAll(event: any) {
+    const checked = event.target.checked;
+    this.allSelected = checked;
+    this.pending.forEach(item => (item.selected = checked));
   }
 
-  trackByFn(index: number, item: PendingItem): any {
-    return item.title; // or any unique identifier
+  trackByFn(index: number, item: PendingUrl & { selected?: boolean }) {
+    return item.id;
   }
 
   bulkApprove() {

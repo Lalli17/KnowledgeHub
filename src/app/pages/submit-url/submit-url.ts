@@ -19,7 +19,7 @@ export class SubmitUrlComponent implements OnInit {
   successMessage = '';
   error = '';
 
-  constructor(private categoryService: CategoryService) {}
+  constructor(private categoryService: CategoryService, private apiService: ApiService) {}
 
   ngOnInit() {
     this.loadCategories();
@@ -38,31 +38,35 @@ export class SubmitUrlComponent implements OnInit {
 
   onSubmit() {
     this.isLoading = true;
-    // ...your existing submit logic (e.g., API call to save URL)...
+    this.apiService.submitUrl(this.model).subscribe({
+      next: () => {
+        this.successMessage = 'URL submitted successfully!';
+        this.isLoading = false;
+        this.error = '';
+        this.model = { title: '', url: '', description: '', categoryId: 0, authorName: '', authorEmail: '' };
 
-    // EmailJS integration - send to admin
-    const adminParams = {
-      title: this.model.title,
-      url: this.model.url,
-      description: this.model.description,
-      category: this.model.categoryId,
-      author_name: this.model.authorName,
-      author_email: this.model.authorEmail
-    };
+        // EmailJS integration - send to admin
+        const adminParams = {
+          title: this.model.title,
+          url: this.model.url,
+          description: this.model.description,
+          category: this.model.categoryId,
+          author_name: this.model.authorName,
+          author_email: this.model.authorEmail
+        };
 
-    emailjs.send(
-      'service_11muu58',         // Service ID
-      'template_ylv9ay6',        // Admin template ID
-      adminParams,
-      'cUMIAU-wWfWG8eTnT'        // Public key
-    ).then(() => {
-      this.successMessage = 'Submitted and notification sent to admin!';
-      this.isLoading = false;
-      this.error = '';
-      this.model = { title: '', url: '', description: '', categoryId: 0, authorName: '', authorEmail: '' };
-    }, (err) => {
-      this.error = 'Submission succeeded but email failed.';
-      this.isLoading = false;
+        emailjs.send(
+          'service_11muu58',         // Service ID
+          'template_ylv9ay6',        // Admin template ID
+          adminParams,
+          'cUMIAU-wWfWG8eTnT'        // Public key
+        ).catch(err => console.error('EmailJS error:', err));
+      },
+      error: (err) => {
+        console.error('Submission error:', err);
+        this.error = 'Failed to submit URL.';
+        this.isLoading = false;
+      }
     });
   }
 }

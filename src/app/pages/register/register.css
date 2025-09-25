@@ -1,0 +1,11 @@
+/* Minimal additions; rely on Bootstrap */
+.register-container {
+  max-width: 520px;
+  border: 0;
+  border-radius: 12px;
+}
+
+.register-container .form-control {
+  padding: 0.65rem 0.75rem;
+}
+
