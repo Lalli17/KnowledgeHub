@@ -105,6 +105,14 @@ export interface ReviewPayload {
   action: 'Approve' | 'Reject'; 
 }
 
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  roles: string[];
+}
+
+
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private base = environment.apiBaseUrl;
@@ -155,4 +163,5 @@ export class ApiService {
   listUsers(): Observable<any[]> { 
     return this.http.get<any[]>(`${this.base}/users`); 
   }
+
 }

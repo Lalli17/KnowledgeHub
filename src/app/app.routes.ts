@@ -25,7 +25,7 @@ export const routes: Routes = [
   { path: 'register', component: Register },
 
   // Routes that require a user to be logged in
-  { path: 'submit', component: SubmitUrl}, //canActivate: [authGuard] },
+  { path: 'submit', component: SubmitUrl, canActivate: [authGuard] },
 
   // Routes that require a user to be an Admin
   { path: 'approve-urls', component: ApproveUrlsComponent, canActivate: [adminGuard] },

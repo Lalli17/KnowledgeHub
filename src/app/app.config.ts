@@ -3,18 +3,22 @@ import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
-import { routes } from './app.routes'; // This now correctly imports the exported routes
+// This line IMPORTS the routes array from the file you sent me.
+import { routes } from './app.routes'; 
 import { AuthInterceptorService } from './services/auth-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    // Provide the application with all the routes we just defined
+    // This line tells your application to USE the routes we just imported.
+    // This is the most important part of the fix.
     provideRouter(routes),
 
-    // Provide the HttpClient so our services can make API calls
+    // These lines provide the necessary tools for making API calls and using the interceptor.
     provideHttpClient(withInterceptorsFromDi()),
-
-    // Provide the AuthInterceptor to automatically add the login token to API requests
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }
+    { 
+      provide: HTTP_INTERCEPTORS, 
+      useClass: AuthInterceptorService, 
+      multi: true 
+    }
   ]
 };
