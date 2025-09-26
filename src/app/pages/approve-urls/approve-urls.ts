@@ -11,7 +11,7 @@ interface PendingUrl {
   authorName?: string;
   authorEmail?: string;
   categoryName?: string;
-  action?: string;
+  action?: string; // Pending / Approve / Reject
   dateSubmitted?: string;
 }
 
@@ -41,18 +41,36 @@ export class ApproveUrlsComponent implements OnInit {
   loadPendingUrls() {
     this.apiService.getPendingUrls().subscribe({
       next: (p) => {
-        // Map possible backend field names to our UI model and add `selected`
-        this.pending = p.map(item => ({
-          id: item.articleIds ? item.articleIds[0] : 0,
-          title: item.title,
-          url: item.url,
-          authorName: (item as any).authorName || '',
-          authorEmail: (item as any).authorEmail || '',
-          categoryName: ((item as any).categoryName ?? (item as any).category?.categoryName ?? (item as any).CategoryName) || '',
-          action: item.action,
-          dateSubmitted: (item as any).dateSubmitted ?? (item as any).submittedOn ?? (item as any).DateSubmitted,
-          selected: false,
-        }));
+        this.pending = p.map(item => {
+          const anyItem: any = item as any;
+          const name = (
+            anyItem.postedBy ??
+            anyItem.authorName ??
+            anyItem.submittedBy ??
+            anyItem.userName ??
+            anyItem.author?.name ??
+            anyItem.createdBy?.name ??
+            ''
+          );
+          const email = (
+            anyItem.authorEmail ??
+            anyItem.email ??
+            anyItem.author?.email ??
+            anyItem.createdBy?.email ??
+            ''
+          );
+          return {
+            id: item.articleIds ? item.articleIds[0] : 0,
+            title: item.title,
+            url: item.url,
+            authorName: String(name).trim(),
+            authorEmail: String(email).trim(),
+            categoryName: ((anyItem.categoryName ?? anyItem.category?.categoryName ?? anyItem.CategoryName) || ''),
+            action: item.action || 'Pending',
+            dateSubmitted: (anyItem.dateSubmitted ?? anyItem.submittedOn ?? anyItem.DateSubmitted),
+            selected: false,
+          };
+        });
         this.allSelected = false;
       },
       error: (err) => {
@@ -62,7 +80,6 @@ export class ApproveUrlsComponent implements OnInit {
     });
   }
 
-  // --- Bulk selection ---
   toggleAll(event: any) {
     const checked = event.target.checked;
     this.allSelected = checked;
@@ -73,76 +90,59 @@ export class ApproveUrlsComponent implements OnInit {
     return item.id;
   }
 
+  approveSingle(item: PendingUrl & { selected?: boolean }) {
+    item.selected = true;
+    this.bulkApprove();
+  }
+
+  rejectSingle(item: PendingUrl & { selected?: boolean }) {
+    item.selected = true;
+    this.bulkReject();
+  }
+
   bulkApprove() {
-    this.successMessage = '';
-    this.error = '';
-    const selectedItems = this.pending.filter(p => p.selected);
-    if (selectedItems.length === 0) {
-      this.error = 'No items selected for approval.';
-      return;
-    }
-    const articleIds = selectedItems.map(item => item.id);
-    this.apiService.reviewUrls({ articleIds, action: 'Approve' }).subscribe({
-      next: () => {
-        this.successMessage = 'Selected URLs approved!';
-        this.loadPendingUrls(); // Reload the list
-        // EmailJS integration for approval
-        selectedItems.forEach(item => {
-          const authorParams = {
-            title: item.title,
-            url: item.url,
-            author_name: item.authorName,
-            email: item.authorEmail,
-            status: 'approved'
-          };
-          emailjs.send(
-            'service_11muu58',         // Service ID
-            'template_l6n2h4i',        // Author template ID
-            authorParams,
-            'cUMIAU-wWfWG8eTnT'        // Public key
-          ).catch(err => console.error('EmailJS error:', err));
-        });
-      },
-      error: (err) => {
-        console.error('Approval error:', err);
-        this.error = 'Failed to approve URLs.';
-      }
-    });
+    this.processBulk('Approve', 'Selected URLs approved!');
   }
 
   bulkReject() {
+    this.processBulk('Reject', 'Selected URLs rejected!');
+  }
+
+  private processBulk(action: 'Approve' | 'Reject', successMsg: string) {
     this.successMessage = '';
     this.error = '';
     const selectedItems = this.pending.filter(p => p.selected);
     if (selectedItems.length === 0) {
-      this.error = 'No items selected for rejection.';
+      this.error = `No items selected for ${action.toLowerCase()}.`;
       return;
     }
     const articleIds = selectedItems.map(item => item.id);
-    this.apiService.reviewUrls({ articleIds, action: 'Reject' }).subscribe({
+    this.apiService.reviewUrls({ articleIds, action }).subscribe({
       next: () => {
-        this.successMessage = 'Selected URLs rejected!';
-        this.loadPendingUrls(); // Reload the list
-        // EmailJS integration for rejection
+        selectedItems.forEach(item => item.action = action); // Update UI instantly
+        this.successMessage = successMsg;
+        this.loadPendingUrls(); // reload fresh list if needed
+
+        // EmailJS integration
         selectedItems.forEach(item => {
           const authorParams = {
             title: item.title,
             url: item.url,
             author_name: item.authorName,
             email: item.authorEmail,
-            status: 'rejected'
+            status: action.toLowerCase()
           };
           emailjs.send(
-            'service_11muu58',         // Service ID
-            'template_l6n2h4i',        // Author template ID
+            'service_11muu58',
+            'template_l6n2h4i',
             authorParams,
-            'cUMIAU-wWfWG8eTnT'        // Public key
+            'cUMIAU-wWfWG8eTnT'
           ).catch(err => console.error('EmailJS error:', err));
         });
       },
       error: (err) => {
-        console.error('Rejection error:', err);
-        this.error = 'Failed to reject URLs.';
+        console.error(`${action} error:`, err);
+        this.error = `Failed to ${action.toLowerCase()} URLs.`;
       }
     });
   }
@@ -166,4 +166,5 @@ export class ApproveUrlsComponent implements OnInit {
     const years = Math.floor(days / 365);
     return `${years}y ago`;
   }
+
 }

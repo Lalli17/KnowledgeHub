@@ -27,14 +27,21 @@
   <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
 
   <div *ngIf="!isLoading && !error">
-    <div class="row" *ngIf="articles.length > 0; else noArticles">
-      <div *ngFor="let article of articles" class="col-md-6 col-lg-4 mb-4">
+    <div class="row" *ngIf="filteredArticles.length > 0; else noArticles">
+      <div *ngFor="let article of filteredArticles" class="col-md-6 col-lg-4 mb-4">
 
         <div class="card h-100">
           <div class="card-body d-flex flex-column">
             <h5 class="card-title">{{ article.title }}</h5>
             <span class="badge bg-secondary mb-2 align-self-start">{{ article.categoryName }}</span>
-            <p class="card-text">{{ article.description }}</p>
+            <div class="desc-row d-flex align-items-start gap-2">
+              <p class="card-text description flex-grow-1" [class.expanded]="isExpanded(article)">
+                {{ article.description }}
+              </p>
+              <button *ngIf="shouldShowToggle(article)" class="btn btn-link p-0 toggle-icon" (click)="toggleExpanded(article)" [attr.aria-label]="isExpanded(article) ? 'Show less' : 'Show more'">
+                <span [class.rotate-180]="isExpanded(article)">▼</span>
+              </button>
+            </div>
 
             <!-- Will display average rating and number of ratings -->
             <!-- ⭐ Average rating (above buttons) -->

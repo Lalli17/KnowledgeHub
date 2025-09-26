@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 import { ApiService, BrowseUrl } from '../../services/api';
+import { AuthService } from '../../services/auth';
 
 declare var bootstrap: any;
 
@@ -22,6 +24,8 @@ export class BrowseUrls implements OnInit {
   selectedArticle: BrowseUrl | null = null;
   selectedRating: number = 0;
   reviewText: string = '';
+  // Track which article descriptions are expanded
+  private expandedArticleIds = new Set<number>();
 
    // ✅ Add these two properties for Angular-only modals
   ratingModalOpen = false;
@@ -35,7 +39,7 @@ export class BrowseUrls implements OnInit {
 
   // We inject our ApiService so we can use it to make HTTP calls
 
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService, private auth: AuthService, private router: Router) {}
 
   ngOnInit(): void {
     this.apiService.browseUrls().subscribe({
@@ -49,16 +53,33 @@ export class BrowseUrls implements OnInit {
         console.error('Error fetching articles:', err);
       }
     });
+
+    // Load categories for filter dropdown on init
+    this.apiService.getCategories().subscribe({
+      next: (cats) => (this.categories = cats || []),
+      error: () => {}
+    });
   }
 
   // Modal functions
+  private ensureLoggedIn(): boolean {
+    if (this.auth.isLoggedIn()) {
+      return true;
+    }
+    const returnUrl = this.router.url || '/browse';
+    this.router.navigate(['/login'], { queryParams: { returnUrl } });
+    return false;
+  }
+
   openRatingModal(article: BrowseUrl) {
+  if (!this.ensureLoggedIn()) { return; }
   this.selectedArticle = article;
   this.selectedRating = 0;
   this.ratingModalOpen = true;
 }
 
 openReviewModal(article: BrowseUrl) {
+  if (!this.ensureLoggedIn()) { return; }
   this.selectedArticle = article;
   this.reviewText = '';
   this.reviewModalOpen = true;
@@ -133,5 +154,25 @@ openReviewModal(article: BrowseUrl) {
 
   postedBy(article: BrowseUrl): string {
     return article?.postedBy ?? 'Anonymous';
+  }
+
+  // UI helpers for description expand/collapse
+  isExpanded(article: BrowseUrl): boolean {
+    return this.expandedArticleIds.has(article.id);
+  }
+
+  toggleExpanded(article: BrowseUrl): void {
+    if (this.isExpanded(article)) {
+      this.expandedArticleIds.delete(article.id);
+    } else {
+      this.expandedArticleIds.add(article.id);
+    }
+  }
+
+  // Show toggle only if description likely exceeds 5 lines
+  shouldShowToggle(article: BrowseUrl): boolean {
+    const textLength = article?.description?.length ?? 0;
+    // Heuristic: ~70 chars per line x 5 lines = 350
+    return textLength > 350;
   }
 }

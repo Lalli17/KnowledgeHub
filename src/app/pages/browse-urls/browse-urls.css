@@ -1,0 +1,35 @@
+/* Maintain a tidy card description area with show more/less */
+.description {
+  display: -webkit-box;
+  -webkit-line-clamp: 5; /* default collapsed lines */
+  line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 6.0em; /* approx 5 lines for consistent card height */
+  text-align: justify;
+}
+
+.description.expanded {
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  min-height: unset;
+}
+
+.card .btn.btn-link {
+  font-size: 0.875rem;
+}
+
+.toggle-icon span {
+  display: inline-block;
+  transition: transform 0.2s ease-in-out;
+}
+
+.toggle-icon span.rotate-180 {
+  transform: rotate(180deg);
+}
+
+.desc-row .toggle-icon {
+  line-height: 1;
+  height: 1.25rem;
+}
+

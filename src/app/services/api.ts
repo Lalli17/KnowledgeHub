@@ -187,7 +187,7 @@ export class ApiService {
   // Ratings
   submitRating(articleId: number, rating: number) {
     return this.http.post<{ averageRating: number; ratingsCount: number }>(
-      `${this.base}/rate/${articleId}`,
+      `${this.base}/ArticleReview/rate/${articleId}`,
       { rating }
     );
   }
@@ -195,7 +195,7 @@ export class ApiService {
   // Reviews
   submitReview(articleId: number, review: string) {
     return this.http.post<any>(
-      `${this.base}/review/${articleId}`,
+      `${this.base}/ArticleReview/review/${articleId}`,
       { review }
     );
   }

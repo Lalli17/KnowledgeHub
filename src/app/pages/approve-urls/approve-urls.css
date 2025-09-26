@@ -1,0 +1,45 @@
+/* Review table styling */
+.review-table {
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.review-table thead th {
+  background: #f7f9fc;
+  color: #344767;
+  font-weight: 600;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.review-table tbody tr:hover {
+  background: #fafbfd;
+}
+
+.title-cell a {
+  color: #0d6efd;
+  text-decoration: none;
+}
+.title-cell a:hover {
+  text-decoration: underline;
+}
+
+.badge {
+  font-size: 0.75rem;
+}
+
+/* Row status accents */
+.row-pending {
+  box-shadow: inset 3px 0 0 0 #0dcaf0;
+}
+.row-approved {
+  box-shadow: inset 3px 0 0 0 #198754;
+}
+.row-rejected {
+  box-shadow: inset 3px 0 0 0 #dc3545;
+}
+
+/* Spacing between action buttons */
+.review-table .btn-group .btn + .btn {
+  margin-left: 8px;
+}
