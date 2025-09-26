@@ -22,6 +22,7 @@ export class DashboardComponent implements OnInit {
   pendingArticlesCount: number = 0;
   rejectedArticlesCount: number = 0;
   ratedArticlesCount: number = 0;
+  averageRating: number = 0;
   categoryData: any[] = [];
 
 
@@ -35,6 +36,7 @@ export class DashboardComponent implements OnInit {
     this.loadPendingArticlesCount();
     this.loadRejectedArticlesCount();
     this.loadRatedArticlesCount();
+    this.loadAverageRating();
     this.loadCategoryData();
     this.loadTopPublishers();
   }
@@ -115,6 +117,17 @@ export class DashboardComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading rated articles count:', error);
+      }
+    });
+  }
+
+  loadAverageRating(): void {
+    this.dashboardService.getAverageRatings().subscribe({
+      next: (avg) => {
+        this.averageRating = avg;
+      },
+      error: (error) => {
+        console.error('Error loading average rating:', error);
       }
     });
   }

@@ -61,14 +61,25 @@ export class DashboardService {
   }
 
   getRejectedArticlesCount(): Observable<number> {
-    return this.apiService.browseUrls().pipe(
-      map((articles: ArticleMetrics[]) => articles.filter(article => article.status === 'Rejected').length)
+    return this.apiService.getRejectedArticles().pipe(
+      map((rejectedArticles: any[]) => rejectedArticles.length)
     );
   }
 
   getRatedArticlesCount(): Observable<number> {
     return this.apiService.browseUrls().pipe(
-      map((articles: ArticleMetrics[]) => articles.filter(article => article.status === 'Approved').length)
+      map((articles: any[]) => articles.filter(article => article.ratingsCount > 0).length)
+    );
+  }
+
+  getAverageRatings(): Observable<number> {
+    return this.apiService.browseUrls().pipe(
+      map((articles: any[]) => {
+        const ratedArticles = articles.filter(article => article.ratingsCount > 0);
+        if (ratedArticles.length === 0) return 0;
+        const total = ratedArticles.reduce((sum, article) => sum + article.averageRating, 0);
+        return total / ratedArticles.length;
+      })
     );
   }
 

@@ -212,9 +212,23 @@ export class ApiService {
 
 
 
+  // Ratings
+  getArticleRatings(articleId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.base}/Ratings/article/${articleId}`);
+  }
+
+  getArticleAverageRating(articleId: number): Observable<number> {
+    return this.http.get<number>(`${this.base}/Ratings/average/${articleId}`);
+  }
+
+  // Rejected Articles
+  getRejectedArticles(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.base}/ArticleReview/rejected`);
+  }
+
   // Users
-  listUsers(): Observable<any[]> { 
-    return this.http.get<any[]>(`${this.base}/users`); 
+  listUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.base}/users`);
   }
 
 }

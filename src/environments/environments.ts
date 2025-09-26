@@ -6,5 +6,6 @@
 export const environment = {
   production: false,
   // Use the URL from your backend's launchSettings.json
-  apiBaseUrl: 'https://knowledgehubdotnet.azurewebsites.net/api' 
+  apiBaseUrl: 'https://knowledgehubdotnet.azurewebsites.net/api',
+ 
 };

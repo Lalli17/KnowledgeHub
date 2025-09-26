@@ -5,6 +5,13 @@ import emailjs from '@emailjs/browser';
 import { CategoryService, Category } from '../../services/category.service';
 import { ApiService } from '../../services/api';
 
+const emailService = {
+  serviceId: 'service_njctvj4',
+  templateIdUser: 'template_kjqtvr9',
+  templateIdAdmin: 'template_hmceqqs',
+  publicKey: 'L4hweapiMjnerKZA0'
+};
+
 @Component({
   selector: 'app-submit-url',
   standalone: true,
@@ -43,7 +50,6 @@ export class SubmitUrlComponent implements OnInit {
         this.successMessage = 'URL submitted successfully!';
         this.isLoading = false;
         this.error = '';
-        this.model = { title: '', url: '', description: '', categoryId: 0, authorName: '', authorEmail: '' };
 
         // EmailJS integration - send to admin
         const adminParams = {
@@ -56,11 +62,13 @@ export class SubmitUrlComponent implements OnInit {
         };
 
         emailjs.send(
-          'service_11muu58',         // Service ID
-          'template_ylv9ay6',        // Admin template ID
+          emailService.serviceId,
+          emailService.templateIdAdmin,
           adminParams,
-          'cUMIAU-wWfWG8eTnT'        // Public key
+          emailService.publicKey
         ).catch(err => console.error('EmailJS error:', err));
+
+        this.model = { title: '', url: '', description: '', categoryId: 0, authorName: '', authorEmail: '' };
       },
       error: (err) => {
         console.error('Submission error:', err);

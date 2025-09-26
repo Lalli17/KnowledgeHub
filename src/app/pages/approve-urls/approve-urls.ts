@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import emailjs from '@emailjs/browser';
 import { ApiService } from '../../services/api';
 
+
 interface PendingUrl {
   id: number;
   title: string;
@@ -122,23 +123,6 @@ export class ApproveUrlsComponent implements OnInit {
         selectedItems.forEach(item => item.action = action); // Update UI instantly
         this.successMessage = successMsg;
         this.loadPendingUrls(); // reload fresh list if needed
-
-        // EmailJS integration
-        selectedItems.forEach(item => {
-          const authorParams = {
-            title: item.title,
-            url: item.url,
-            author_name: item.authorName,
-            email: item.authorEmail,
-            status: action.toLowerCase()
-          };
-          emailjs.send(
-            'service_11muu58',
-            'template_l6n2h4i',
-            authorParams,
-            'cUMIAU-wWfWG8eTnT'
-          ).catch(err => console.error('EmailJS error:', err));
-        });
       },
       error: (err) => {
         console.error(`${action} error:`, err);

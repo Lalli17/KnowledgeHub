@@ -111,6 +111,13 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.stat-subtext {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 4px 0 0 0;
+  opacity: 0.9;
+}
+
 /* ===== ANALYTICS SECTION ===== */
 .analytics-section {
   margin-bottom: 40px;
@@ -130,6 +137,10 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   border: 1px solid #e2e8f0;
   transition: all 0.3s ease;
+}
+
+.table-card.full-width {
+  grid-column: 1 / -1;
 }
 
 .chart-card:hover, .table-card:hover {
