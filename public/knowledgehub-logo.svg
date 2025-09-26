@@ -1,0 +1,25 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Knowledge Hub logo">
+  <defs>
+    <linearGradient id="kh-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6a11cb"/>
+      <stop offset="100%" stop-color="#2575fc"/>
+    </linearGradient>
+    <linearGradient id="kh-accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffb443"/>
+      <stop offset="100%" stop-color="#ff5f6d"/>
+    </linearGradient>
+  </defs>
+  <rect x="24" y="24" width="464" height="464" rx="48" fill="url(#kh-gradient)"/>
+  <!-- Book shape -->
+  <path d="M128 160h144c22 0 40 18 40 40v168c-11-11-26-16-44-16H128V160z" fill="#ffffff" opacity="0.95"/>
+  <path d="M240 160h144v192h-92c-18 0-33 5-44 16V200c0-22-18-40-40-40z" fill="#ffffff" opacity="0.85"/>
+  <!-- Lightbulb (idea) -->
+  <g transform="translate(160,116)">
+    <circle cx="96" cy="72" r="56" fill="url(#kh-accent)"/>
+    <rect x="84" y="130" width="24" height="28" rx="6" fill="#2a2a2a" opacity="0.9"/>
+    <rect x="74" y="158" width="44" height="10" rx="5" fill="#2a2a2a" opacity="0.9"/>
+  </g>
+  <!-- Bookmark ribbon -->
+  <path d="M368 128v120l-24-16-24 16V128" fill="#ffffff" opacity="0.9"/>
+</svg>
+

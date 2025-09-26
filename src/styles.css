@@ -1,1 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Reserve space so content isn't hidden under fixed navbar/footer */
+body {
+  padding-top: 56px; /* default bootstrap navbar height */
+  padding-bottom: 56px; /* reserve for fixed footer */
+}
+
+@media (min-width: 992px) {
+  body {
+    padding-top: 64px;
+  }
+}
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

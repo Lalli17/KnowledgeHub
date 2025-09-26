@@ -1,6 +1,9 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
   <div class="container">
-    <a class="navbar-brand" routerLink="/">Knowledge Hub</a>
+    <a class="navbar-brand d-flex align-items-center gap-2" routerLink="/">
+      <img src="/knowledgehub-logo.svg" alt="Knowledge Hub" width="28" height="28" style="filter: drop-shadow(0 0 2px rgba(0,0,0,.2));"/>
+      <span>Knowledge Hub</span>
+    </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -9,9 +12,11 @@
       <ul class="navbar-nav me-auto">
         <li class="nav-item"><a class="nav-link" routerLink="/">Home</a></li>
         <li class="nav-item"><a class="nav-link" routerLink="/browse">Browse URLs</a></li>
-        <li class="nav-item" *ngIf="auth.isLoggedIn()"><a class="nav-link" routerLink="/submit">Submit URL</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/submit">Submit URL</a></li>
+        <!-- <li class="nav-item" *ngIf="auth.isAdmin()"><a class="nav-link" routerLink="/dashboard">Dashboard</a></li> -->
         <li class="nav-item" *ngIf="auth.isAdmin()"><a class="nav-link" routerLink="/approve-urls">Approve URLs</a></li>
-        <li class="nav-item" *ngIf="auth.isAdmin()"><a class="nav-link" routerLink="/list-categories">Categories</a></li>
+        <li class="nav-item" *ngIf="auth.isAdmin()"><a class="nav-link" routerLink="/category">Create Catagory</a></li>
+        <li class="nav-item" *ngIf="auth.isAdmin()"><a class="nav-link" routerLink="/category/list">Categories</a></li>
         <li class="nav-item" *ngIf="auth.isAdmin()"><a class="nav-link" routerLink="/list-users">Users</a></li>
       </ul>
 
@@ -20,7 +25,7 @@
         <li class="nav-item" *ngIf="!auth.isLoggedIn()"><a class="nav-link" routerLink="/register">Register</a></li>
         <li class="nav-item dropdown" *ngIf="auth.isLoggedIn()">
           <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown">
-            {{ auth.getCurrentUser()?.email }}
+            {{ auth.getCurrentUser()?.name}}
           </a>
           <ul class="dropdown-menu dropdown-menu-end">
             <li><a class="dropdown-item" (click)="logout()">Logout</a></li>
@@ -29,4 +34,4 @@
       </ul>
     </div>
   </div>
-</nav>
+</nav> 

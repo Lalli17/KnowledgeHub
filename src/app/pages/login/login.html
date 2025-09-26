@@ -1,17 +1,43 @@
-<div class="card mx-auto" style="max-width:420px">
-  <div class="card-body">
-    <h5 class="card-title">Login</h5>
-    <form [formGroup]="form" (ngSubmit)="submit()">
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+  <div class="card shadow-lg p-4 auth-card w-100" style="max-width: 420px;">
+    <h2 class="text-center mb-1">Welcome back</h2>
+    <p class="text-muted text-center mb-4">Sign in to continue</p>
+
+    <form [formGroup]="loginForm" (ngSubmit)="login()" novalidate>
       <div class="mb-3">
-        <label>Email</label>
-        <input class="form-control" formControlName="email" />
+        <label for="email" class="form-label">Email</label>
+        <input
+          id="email"
+          type="email"
+          class="form-control"
+          formControlName="email"
+          [ngClass]="{'is-invalid': loginForm.get('email')?.invalid && loginForm.get('email')?.touched}"
+        />
+        <div class="invalid-feedback">Enter a valid email address</div>
       </div>
-      <div class="mb-3">
-        <label>Password</label>
-        <input type="password" class="form-control" formControlName="password" />
+
+      <div class="mb-2">
+        <label for="password" class="form-label">Password</label>
+        <input
+          id="password"
+          type="password"
+          class="form-control"
+          formControlName="password"
+          [ngClass]="{'is-invalid': loginForm.get('password')?.invalid && loginForm.get('password')?.touched}"
+        />
+        <div class="invalid-feedback">Password is required</div>
       </div>
-      <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
-      <button class="btn btn-primary" type="submit">Login</button>
+
+      <button class="btn btn-primary w-100 mt-2" [disabled]="loading || loginForm.invalid">
+        {{ loading ? 'Signing in...' : 'Login' }}
+      </button>
     </form>
+
+    <p *ngIf="error" class="text-danger text-center mt-3">{{ error }}</p>
+
+    <div class="text-center mt-3 small">
+      Don’t have an account?
+      <a routerLink="/register" class="text-decoration-none">Register</a>
+    </div>
   </div>
 </div>

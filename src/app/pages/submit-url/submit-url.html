@@ -49,13 +49,13 @@
               <label for="category" class="form-label">Category</label>
               <select class="form-select" id="category" name="category" required
                       [(ngModel)]="model.categoryId" #category="ngModel">
-                <option [value]="0" disabled>-- Select a Category --</option>
+                <option value="" disabled selected>-- Select a Category --</option>
                 <!-- Loop through the categories fetched from the API -->
                 <option *ngFor="let cat of categories" [value]="cat.id">
                   {{ cat.categoryName }}
                 </option>
               </select>
-              <div *ngIf="model.categoryId === 0 && category.touched" class="text-danger small mt-1">
+              <div *ngIf="(!model.categoryId) && category.touched" class="text-danger small mt-1">
                 Please select a category.
               </div>
             </div>

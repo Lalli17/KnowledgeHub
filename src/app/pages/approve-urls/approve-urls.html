@@ -1,18 +1,44 @@
-<h3>Approve URLs</h3>
-<table class="table">
-  <thead><tr><th>Title</th><th>URL</th><th>Category</th><th>Actions</th></tr></thead>
-  <tbody>
-    <!-- THIS IS THE FIX: We now track by p.title and pass p.articleIds[0] to the approve/reject methods -->
-    @for (p of pending; track p.title) {
+<h3>Review Articles</h3>
+<div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+<div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+<ng-container *ngIf="(pending?.length ?? 0) > 0; else emptyState">
+  <table class="table table-striped">
+    <thead>
       <tr>
-        <td>{{ p.title }}</td>
-        <td><a [href]="p.url" target="_blank">Open</a></td>
-        <td>{{ p.categoryName }}</td>
-        <td>
-          <button class="btn btn-sm btn-success me-1" (click)="approve(p.articleIds[0])">Approve</button>
-          <button class="btn btn-sm btn-danger" (click)="reject(p.articleIds[0])">Reject</button>
-        </td>
+        <th>
+          <input type="checkbox" [checked]="allSelected" (change)="toggleAll($event)" /> <!-- master checkbox -->
+        </th>
+        <th>Title</th>
+        <th>Category</th>
+        <th>Submitted</th>
       </tr>
-    }
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <tr *ngFor="let p of pending; trackBy: trackByFn">
+        <td>
+          <input 
+            type="checkbox" 
+            [(ngModel)]="p.selected" 
+            name="selected{{p.title}}" />
+        </td>
+        <td>
+          <a [href]="p.url" target="_blank" rel="noopener noreferrer">{{ p.title }}</a>
+          </td>
+        <td>{{ p.categoryName || '-' }}</td>
+        <td>{{ p.dateSubmitted ? timeAgo(p.dateSubmitted) : '-' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Actions at bottom outside the table -->
+  <div class="mt-3 d-flex">
+    <button class="btn btn-success me-2" (click)="bulkApprove()" [disabled]="!anySelected">Approve Selected</button>
+    <button class="btn btn-danger" (click)="bulkReject()" [disabled]="!anySelected">Reject Selected</button>
+  </div>
+</ng-container>
+
+<ng-template #emptyState>
+  <div class="alert alert-info mt-3">No articles for reviewing.</div>
+  
+</ng-template>

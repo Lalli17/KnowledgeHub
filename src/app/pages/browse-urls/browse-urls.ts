@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+
 import { ApiService, BrowseUrl } from '../../services/api';
 
 declare var bootstrap: any;
@@ -9,6 +10,7 @@ declare var bootstrap: any;
 @Component({
   selector: 'app-browse-urls',
   standalone: true,
+
   imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './browse-urls.html',
   styleUrls: ['./browse-urls.css']
@@ -17,7 +19,6 @@ export class BrowseUrls implements OnInit {
   articles: BrowseUrl[] = [];
   isLoading = true;
   error: string | null = null;
-
   selectedArticle: BrowseUrl | null = null;
   selectedRating: number = 0;
   reviewText: string = '';
@@ -25,6 +26,14 @@ export class BrowseUrls implements OnInit {
    // ✅ Add these two properties for Angular-only modals
   ratingModalOpen = false;
   reviewModalOpen = false;
+
+
+  // Filters
+  categories: { id: number; categoryName: string }[] = [];
+  selectedCategoryName: string = '';
+  searchTerm: string = '';
+
+  // We inject our ApiService so we can use it to make HTTP calls
 
   constructor(private apiService: ApiService) {}
 
@@ -68,6 +77,25 @@ openReviewModal(article: BrowseUrl) {
         console.error('Error submitting rating:', err);
         alert('Failed to submit rating.');
       }
+    });
+
+    // Load categories for filter dropdown
+    this.apiService.getCategories().subscribe({
+      next: (cats) => (this.categories = cats),
+      error: () => {}
+    });
+  }
+
+  // Derived list applying filters and search
+  get filteredArticles(): BrowseUrl[] {
+    const term = this.searchTerm.trim().toLowerCase();
+    const cat = this.selectedCategoryName;
+    return this.articles.filter(a => {
+      const matchesCategory = cat ? a.categoryName === cat : true;
+      const matchesSearch = term
+        ? (a.title?.toLowerCase().includes(term) || a.description?.toLowerCase().includes(term))
+        : true;
+      return matchesCategory && matchesSearch;
     });
   }
 

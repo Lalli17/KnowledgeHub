@@ -1,0 +1,23 @@
+/* Navbar fixed at the top */
+.fixed-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000; /* ensures it stays above content */
+}
+
+/* Footer fixed at the bottom */
+.fixed-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+/* Add padding to the content so it doesn't go behind navbar/footer */
+.content {
+  padding-top: 60px;   /* height of your navbar */
+  padding-bottom: 60px; /* height of your footer */
+}
