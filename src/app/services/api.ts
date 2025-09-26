@@ -67,11 +67,13 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environments';
 
 // Data Models
+
 export interface Category { 
   id: number; 
   categoryName: string; 
   categoryDescription: string; 
 }
+
 
 export interface BrowseUrl {
   id: number;
@@ -80,6 +82,17 @@ export interface BrowseUrl {
   description: string;
   postedBy: string;
   categoryName: string;
+  averageRating: number;   // ✅ add this
+  ratingsCount: number;    // ✅ add this
+  reviews?: ReviewDto[];   // optional if backend sends reviews
+}
+
+export interface ReviewDto {
+  id: number;
+  ratingNumber: number;
+  review: string;
+  name: string;
+  ratedAt: string;
   status?: string;
   DateSubmitted?: Date;
   updatedAt?: Date;
@@ -123,7 +136,7 @@ export interface User {
 export class ApiService {
   private base = environment.apiBaseUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // Categories
   getCategories(): Observable<Category[]> { 
@@ -169,6 +182,35 @@ export class ApiService {
     const payload: ReviewPayload = { articleIds: [id], action: 'Reject' };
     return this.reviewUrls(payload);
   }
+
+  // -------------------------
+  // Ratings
+  submitRating(articleId: number, rating: number) {
+    return this.http.post<{ averageRating: number; ratingsCount: number }>(
+      `${this.base}/rate/${articleId}`,
+      { rating }
+    );
+  }
+
+  // Reviews
+  submitReview(articleId: number, review: string) {
+    return this.http.post<any>(
+      `${this.base}/review/${articleId}`,
+      { review }
+    );
+  }
+
+
+  // Add ratings and reviews
+  addRating(articleId: number, rating: number) {
+    return this.http.post(`/api/ratings`, { articleId, rating });
+  }
+
+  // addReview(articleId: number, review: string) {
+  //   return this.http.post(`/api/reviews`, { articleId, review });
+  // }
+
+
 
   // Users
   listUsers(): Observable<any[]> { 
