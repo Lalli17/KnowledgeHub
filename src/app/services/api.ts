@@ -9,12 +9,32 @@ export interface BrowseUrl { title: string; url: string; description: string; po
 export interface SubmitUrlPayload { title: string; url: string; description: string; categoryId: number; }
 export interface PendingUrl { articleIds: number[]; title: string; url: string; } // Matching your component's needs
 export interface ReviewPayload { articleIds: number[]; action: 'Approve' | 'Reject'; }
+export interface BrowseUrl {
+  id: number;
+  title: string;
+  url: string;
+  description: string;
+  postedBy: string;
+  categoryName: string;
+  averageRating: number;   // ✅ add this
+  ratingsCount: number;    // ✅ add this
+  reviews?: ReviewDto[];   // optional if backend sends reviews
+}
+
+export interface ReviewDto {
+  id: number;
+  ratingNumber: number;
+  review: string;
+  name: string;
+  ratedAt: string;
+}
+
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private base = environment.apiBaseUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // Categories
   getCategories(): Observable<Category[]> { return this.http.get<Category[]>(`${this.base}/Category`); }
@@ -45,6 +65,32 @@ export class ApiService {
     return this.reviewUrls(payload);
   }
   // -------------------------
+  // Ratings
+  submitRating(articleId: number, rating: number) {
+    return this.http.post<{ averageRating: number; ratingsCount: number }>(
+      `${this.base}/rate/${articleId}`,
+      { rating }
+    );
+  }
+
+  // Reviews
+  submitReview(articleId: number, review: string) {
+    return this.http.post<any>(
+      `${this.base}/review/${articleId}`,
+      { review }
+    );
+  }
+
+
+  // Add ratings and reviews
+  addRating(articleId: number, rating: number) {
+    return this.http.post(`/api/ratings`, { articleId, rating });
+  }
+
+  // addReview(articleId: number, review: string) {
+  //   return this.http.post(`/api/reviews`, { articleId, review });
+  // }
+
 
   // Users
   listUsers(): Observable<any[]> { return this.http.get<any[]>(`${this.base}/users`); }

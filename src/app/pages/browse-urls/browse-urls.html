@@ -5,41 +5,161 @@
   </div>
   <p class="lead">Here are the latest approved links shared by the community.</p>
 
-  <!-- Show a loading spinner while data is being fetched -->
   <div *ngIf="isLoading" class="text-center py-5">
     <div class="spinner-border" role="status">
       <span class="visually-hidden">Loading...</span>
     </div>
   </div>
 
-  <!-- Show an error message if the API call fails -->
   <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
 
-  <!-- Once loaded, display the articles or a "not found" message -->
   <div *ngIf="!isLoading && !error">
     <div class="row" *ngIf="articles.length > 0; else noArticles">
-      <!-- Loop through each article and create a card for it -->
       <div *ngFor="let article of articles" class="col-md-6 col-lg-4 mb-4">
         <div class="card h-100">
           <div class="card-body d-flex flex-column">
             <h5 class="card-title">{{ article.title }}</h5>
             <span class="badge bg-secondary mb-2 align-self-start">{{ article.categoryName }}</span>
-            <p class="card-text flex-grow-1">{{ article.description }}</p>
-            <a [href]="article.url" target="_blank" class="btn btn-outline-primary mt-auto">Visit Link</a>
+            <p class="card-text">{{ article.description }}</p>
+
+            <!-- Will display average rating and number of ratings -->
+            <!-- ⭐ Average rating (above buttons) -->
+            <p class="mb-2 mt-auto">
+              <strong>Average Rating:</strong>
+              {{ article?.averageRating | number:'1.1-1' }} ⭐
+              ({{ article?.ratingsCount ?? 0 }} ratings)
+            </p>
+
+            <!-- Will display up to 2 reviews if available  -->
+            <!-- <div *ngIf="reviews(article).length > 0" class="small text-muted mb-2">
+              <div *ngFor="let review of reviews(article) | slice:0:2">
+                <em>"{{ review.review }}"</em> — {{ review.name || 'Anonymous' }}
+              </div>
+              <div *ngIf="reviews(article).length > 2">...and more</div>
+            </div> -->
+
+            <!-- <div class="mt-auto d-flex flex-wrap gap-2">
+              <button class="btn btn-sm btn-outline-success" (click)="openRatingModal(article)">Rate</button>
+              <button class="btn btn-sm btn-outline-info" (click)="openReviewModal(article)">Review</button>
+              <a [href]="article.url" target="_blank" class="btn btn-sm btn-outline-primary">Visit Link</a>
+            </div> -->
+
+            <!-- Action buttons -->
+            <div class="mt-2 d-flex flex-wrap gap-2">
+              <button class="btn btn-sm btn-outline-success" (click)="openRatingModal(article)">
+                Rate
+              </button>
+              <button class="btn btn-sm btn-outline-info" (click)="openReviewModal(article)">
+                Review
+              </button>
+              <a [href]="article.url" target="_blank" class="btn btn-sm btn-outline-primary">
+                Visit Link
+              </a>
+            </div>
+
           </div>
           <div class="card-footer text-muted">
-            Shared by: {{ article.postedBy }}
+            Shared by: {{ postedBy(article) }}
           </div>
         </div>
       </div>
     </div>
 
-    <!-- This block shows if the articles array is empty -->
     <ng-template #noArticles>
       <div class="text-center py-5">
         <h3>No URLs Found</h3>
-        <p>There are no approved articles to display yet. Why not be the first to <a routerLink="/submit">submit one</a>?</p>
+        <p>There are no approved articles to display yet. Why not be the first to <a routerLink="/submit">submit
+            one</a>?</p>
       </div>
     </ng-template>
+  </div>
+</div>
+
+<!-- ⭐ Rating Modal -->
+<!-- <div class="modal fade" id="ratingModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Rate: {{ selectedArticleTitle }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center">
+        <div class="btn-group">
+          <button *ngFor="let r of [1,2,3,4,5]"
+                  class="btn btn-outline-warning"
+                  [class.active]="r === selectedRating"
+                  (click)="selectedRating = r">{{ r }} ⭐</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-success" (click)="submitRating()">Submit</button>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+<!-- 📝 Review Modal -->
+<!-- <div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Review: {{ selectedArticleTitle }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <textarea [(ngModel)]="reviewText" class="form-control" rows="4" placeholder="Write your review..."></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-info" (click)="submitReview()">Submit</button>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+<!-- ⭐ Rating Modal -->
+<div *ngIf="ratingModalOpen" class="modal-backdrop fade show"></div>
+<div *ngIf="ratingModalOpen" class="modal d-block" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Rate: {{ selectedArticle?.title }}</h5>
+        <button type="button" class="btn-close" (click)="ratingModalOpen = false"></button>
+      </div>
+      <div class="modal-body text-center">
+        <div class="btn-group">
+          <button *ngFor="let r of [1,2,3,4,5]" class="btn btn-outline-warning" [class.active]="r === selectedRating"
+            (click)="selectedRating = r">
+            {{ r }} ⭐
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="ratingModalOpen = false">Cancel</button>
+        <button class="btn btn-success" (click)="submitRating()">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- 📝 Review Modal -->
+<div *ngIf="reviewModalOpen" class="modal-backdrop fade show"></div>
+<div *ngIf="reviewModalOpen" class="modal d-block" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Review: {{ selectedArticle?.title }}</h5>
+        <button type="button" class="btn-close" (click)="reviewModalOpen = false"></button>
+      </div>
+      <div class="modal-body">
+        <textarea [(ngModel)]="reviewText" class="form-control" rows="4" placeholder="Write your review..."></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="reviewModalOpen = false">Cancel</button>
+        <button class="btn btn-info" (click)="submitReview()">Submit</button>
+      </div>
+    </div>
   </div>
 </div>
