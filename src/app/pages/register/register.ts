@@ -14,6 +14,8 @@ import { AuthService } from '../../services/auth';
 export class Register {
   registerForm: FormGroup;
   error = '';
+  hidePassword = true;
+  hideConfirmPassword = true;
 
   constructor(
     private fb: FormBuilder,
@@ -38,6 +40,14 @@ export class Register {
     const confirm = group.get('confirmPassword')?.value;
     return password === confirm ? null : { mismatch: true };
   };
+
+  togglePasswordVisibility() {
+    this.hidePassword = !this.hidePassword;
+  }
+
+  toggleConfirmPasswordVisibility() {
+    this.hideConfirmPassword = !this.hideConfirmPassword;
+  }
 
   register() {
     if (this.registerForm.invalid) return;
