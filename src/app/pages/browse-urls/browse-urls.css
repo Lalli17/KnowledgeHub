@@ -33,3 +33,27 @@
   height: 1.25rem;
 }
 
+/* Ensure pagination is visible above fixed footer */
+.pagination {
+  margin-bottom: 2rem !important;
+}
+
+/* Add extra padding to the main container to prevent footer overlap */
+.container {
+  padding-bottom: 3rem;
+}
+
+/* Style for ellipsis in pagination */
+.page-item.disabled .page-link {
+  background-color: transparent;
+  border-color: #dee2e6;
+  color: #6c757d;
+  cursor: default;
+}
+
+.page-item.disabled .page-link:hover {
+  background-color: transparent;
+  border-color: #dee2e6;
+  color: #6c757d;
+}
+

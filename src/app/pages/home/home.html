@@ -6,33 +6,205 @@
     </p>
 
     <div class="row g-4 justify-content-center">
-      <div class="col-md-4">
-        <div class="card h-100 shadow-sm feature">
+      <div class="col-md-6">
+        <a routerLink="/browse" class="card h-100 shadow-sm feature feature-link">
           <div class="card-body">
             <div class="icon text-primary mb-2"><i class="bi bi-collection"></i></div>
             <h5 class="card-title">Discover</h5>
             <p class="card-text">Explore community-curated links and resources across topics.</p>
           </div>
-        </div>
+        </a>
       </div>
-      <div class="col-md-4">
-        <div class="card h-100 shadow-sm feature">
+      <div class="col-md-6">
+        <a routerLink="/submit" class="card h-100 shadow-sm feature feature-link">
           <div class="card-body">
             <div class="icon text-success mb-2"><i class="bi bi-upload"></i></div>
             <h5 class="card-title">Contribute</h5>
             <p class="card-text">Share helpful URLs to grow the knowledge base for everyone.</p>
           </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card h-100 shadow-sm feature">
-          <div class="card-body">
-            <div class="icon text-warning mb-2"><i class="bi bi-shield-check"></i></div>
-            <h5 class="card-title">Moderate</h5>
-            <p class="card-text">Admins approve submissions and organize categories.</p>
-          </div>
-        </div>
+        </a>
       </div>
     </div>
   </div>
 </section>
+
+<!-- Dashboard Section -->
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <h2>Featured Articles</h2>
+    <p class="dashboard-subtitle">Discover our top resources</p>
+  </header>
+
+  <!-- Recently Approved Articles Section -->
+  <section class="recent-articles-section">
+    <div class="articles-grid" *ngIf="recentArticles && recentArticles.length > 0; else noArticles">
+      <div *ngFor="let article of recentArticles" class="article-card">
+        <div class="article-header">
+          <h3 class="article-title">{{ article.title }}</h3>
+          <span class="article-category">{{ article.categoryName }}</span>
+        </div>
+        <p class="article-description">{{ article.description }}</p>
+        <div class="article-meta">
+          <div class="article-url">
+            <i class="bi bi-link-45deg"></i>
+            <a [href]="article.url" target="_blank" class="url-link">{{ article.url }}</a>
+          </div>
+          <div class="article-info">
+            <span class="article-rating" *ngIf="article.averageRating > 0">
+              <i class="bi bi-star-fill"></i>
+              {{ article.averageRating | number:'1.1-1' }} ({{ article.ratingsCount }} ratings)
+            </span>
+            <span class="article-publisher" *ngIf="article.postedBy">
+              <i class="bi bi-person"></i>
+              {{ article.postedBy }}
+            </span>
+          </div>
+        </div>
+        <div class="article-actions">
+          <a [href]="article.url" target="_blank" class="btn btn-primary btn-sm">
+            <i class="bi bi-box-arrow-up-right"></i>
+            Visit Article
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="explore-more-section" *ngIf="recentArticles && recentArticles.length > 0">
+      <a routerLink="/browse" class="btn btn-outline-primary btn-lg">
+        <i class="bi bi-arrow-right"></i>
+        Explore More Articles
+      </a>
+    </div>
+    
+    <ng-template #noArticles>
+      <div class="no-articles">
+        <i class="bi bi-journal-text"></i>
+        <h3>No articles available</h3>
+        <p>Check back later for new learning resources!</p>
+        <a routerLink="/browse" class="btn btn-primary mt-3">
+          <i class="bi bi-search"></i>
+          Browse All Articles
+        </a>
+      </div>
+    </ng-template>
+  </section>
+
+  <!-- Statistics Cards Section - Only show for logged-in users -->
+  <section class="stats-section" *ngIf="isLoggedIn">
+    <div class="stats-grid">
+      <div class="stat-card approved">
+        <div class="stat-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-content">
+          <h3>Approved</h3>
+          <p class="stat-number">{{ approvedArticlesCount }}</p>
+        </div>
+      </div>
+
+      <div class="stat-card rejected">
+        <div class="stat-icon">
+          <i class="fas fa-times-circle"></i>
+        </div>
+        <div class="stat-content">
+          <h3>Rejected</h3>
+          <p class="stat-number">{{ rejectedArticlesCount }}</p>
+        </div>
+      </div>
+
+      <div class="stat-card pending">
+        <div class="stat-icon">
+          <i class="fas fa-hourglass-half"></i>
+        </div>
+        <div class="stat-content">
+          <h3>Pending</h3>
+          <p class="stat-number">{{ pendingArticlesCount }}</p>
+        </div>
+      </div>
+
+      <div class="stat-card rated">
+        <div class="stat-icon">
+          <i class="fas fa-star"></i>
+        </div>
+        <div class="stat-content">
+          <h3>Rated</h3>
+          <p class="stat-number">{{ ratedArticlesCount }}</p>
+          <p class="stat-subtext">Avg: {{ averageRating | number:'1.1-1' }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Charts and Tables Section - Visible to all users -->
+  <section class="analytics-section">
+    <div class="charts-grid">
+      <!-- Article Categories Chart -->
+      <div class="chart-card">
+        <h2>Article Categories</h2>
+        <div class="pie-chart-container" *ngIf="categoryData && categoryData.length > 0">
+          <div class="pie-chart-wrapper">
+            <div class="pie-chart" [style.background]="'conic-gradient(' + getConicGradient() + ')'">
+              <div class="pie-center">
+                <span class="pie-total">{{ approvedArticlesCount }}</span>
+                <span class="pie-label">Articles</span>
+              </div>
+            </div>
+            <div class="legend-container">
+              <div *ngFor="let item of categoryData; let i = index" 
+                   class="legend-item" 
+                   [title]="item.category + ': ' + item.count + ' articles (' + getPercentage(item.count) + '%)'">
+                <span class="legend-color" [style.background-color]="getColor(i)"></span>
+                <span class="legend-text">{{ item.category }} ({{ item.count }})</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Categories Table -->
+      <div class="table-card">
+        <h2>Top Categories</h2>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Articles</th>
+                <th>Percentage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of categoryData">
+                <td>{{ item.category }}</td>
+                <td>{{ item.count }}</td>
+                <td>{{ getPercentage(item.count) }}%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Top Publishers Table -->
+      <div class="table-card full-width">
+        <h2>Top Publishers</h2>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Publisher</th>
+                <th>Articles Submitted</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let publisher of topPublishers">
+                <td>{{ publisher.publisher }}</td>
+                <td>{{ publisher.count }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>

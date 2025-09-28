@@ -37,6 +37,11 @@ export class BrowseUrls implements OnInit {
   selectedCategoryName: string = '';
   searchTerm: string = '';
 
+  // Pagination
+  currentPage: number = 1;
+  itemsPerPage: number = 6;
+  totalPages: number = 0;
+
   // We inject our ApiService so we can use it to make HTTP calls
 
   constructor(private apiService: ApiService, private auth: AuthService, private router: Router) {}
@@ -45,6 +50,7 @@ export class BrowseUrls implements OnInit {
     this.apiService.browseUrls().subscribe({
       next: (data) => {
         this.articles = data ?? [];
+        this.calculateTotalPages();
         this.isLoading = false;
       },
       error: (err) => {
@@ -118,6 +124,98 @@ openReviewModal(article: BrowseUrl) {
         : true;
       return matchesCategory && matchesSearch;
     });
+  }
+
+  // Get paginated articles
+  get paginatedArticles(): BrowseUrl[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    return this.filteredArticles.slice(startIndex, endIndex);
+  }
+
+  // Calculate total pages based on filtered articles
+  calculateTotalPages(): void {
+    this.totalPages = Math.ceil(this.filteredArticles.length / this.itemsPerPage);
+    if (this.currentPage > this.totalPages && this.totalPages > 0) {
+      this.currentPage = 1;
+    }
+  }
+
+  // Pagination methods
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  // Get page numbers for pagination display with ellipsis
+  getPageNumbers(): (number | string)[] {
+    const pages: (number | string)[] = [];
+    
+    if (this.totalPages <= 7) {
+      // Show all pages if 7 or fewer
+      for (let i = 1; i <= this.totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Always show first page
+      pages.push(1);
+      
+      if (this.currentPage <= 4) {
+        // Show 1, 2, 3, 4, 5, ..., last
+        for (let i = 2; i <= 5; i++) {
+          pages.push(i);
+        }
+        pages.push('...');
+        pages.push(this.totalPages);
+      } else if (this.currentPage >= this.totalPages - 3) {
+        // Show 1, ..., last-4, last-3, last-2, last-1, last
+        pages.push('...');
+        for (let i = this.totalPages - 4; i <= this.totalPages; i++) {
+          pages.push(i);
+        }
+      } else {
+        // Show 1, ..., current-1, current, current+1, ..., last
+        pages.push('...');
+        for (let i = this.currentPage - 1; i <= this.currentPage + 1; i++) {
+          pages.push(i);
+        }
+        pages.push('...');
+        pages.push(this.totalPages);
+      }
+    }
+    
+    return pages;
+  }
+
+  // Handle filter changes
+  onFilterChange(): void {
+    this.currentPage = 1; // Reset to first page when filters change
+    this.calculateTotalPages();
+  }
+
+  // Helper method for template
+  getMathMin(a: number, b: number): number {
+    return Math.min(a, b);
+  }
+
+  // Helper method to handle page navigation with type safety
+  navigateToPage(page: number | string): void {
+    if (typeof page === 'number') {
+      this.goToPage(page);
+    }
   }
 
   submitReview() {
