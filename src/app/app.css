@@ -7,17 +7,18 @@
   z-index: 1000; /* ensures it stays above content */
 }
 
-/* Footer fixed at the bottom */
-.fixed-footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  z-index: 1000;
+/* Navbar at top */
+app-navbar {
+  flex-shrink: 0; /* prevent shrinking */
 }
 
-/* Add padding to the content so it doesn't go behind navbar/footer */
+/* Content takes all available space */
 .content {
-  padding-top: 60px;   /* height of your navbar */
-  padding-bottom: 60px; /* height of your footer */
+  flex: 1 0 auto;
+  padding: 20px; /* adjust for spacing */
+}
+
+/* Footer stays at bottom but doesn’t overlap */
+app-footer {
+  flex-shrink: 0;
 }

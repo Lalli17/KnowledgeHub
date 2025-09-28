@@ -227,8 +227,16 @@ export class ApiService {
   }
 
   // Users
-  listUsers(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.base}/users`);
+ 
+  getUsers() {
+    return this.http.get<any[]>(`${this.base}/Users`);
   }
 
+  updateUser(id: number, data: any) {
+    return this.http.put(`${this.base}/Users/${id}`, data);
+  }
+
+  deleteUser(id: number) {
+    return this.http.delete(`${this.base}/Users/${id}`);
+  }
 }
