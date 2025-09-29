@@ -1,4 +1,4 @@
-<div class="container mt-4">
+<div class="container mt-4 mb-5">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h1>Browse Articles</h1>
     <a routerLink="/submit" class="btn btn-primary">Submit a New URL</a>
@@ -8,13 +8,13 @@
   <!-- Filters -->
   <div class="row g-2 mb-4">
     <div class="col-md-4">
-      <select class="form-select" [(ngModel)]="selectedCategoryName">
+      <select class="form-select" [(ngModel)]="selectedCategoryName" (ngModelChange)="onFilterChange()">
         <option value="">All Categories</option>
         <option *ngFor="let c of categories" [value]="c.categoryName">{{ c.categoryName }}</option>
       </select>
     </div>
     <div class="col-md-8">
-      <input type="text" class="form-control" placeholder="Search articles..." [(ngModel)]="searchTerm" />
+      <input type="text" class="form-control" placeholder="Search articles..." [(ngModel)]="searchTerm" (ngModelChange)="onFilterChange()" />
     </div>
   </div>
 
@@ -27,14 +27,28 @@
   <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
 
   <div *ngIf="!isLoading && !error">
-    <div class="row" *ngIf="articles.length > 0; else noArticles">
-      <div *ngFor="let article of articles" class="col-md-6 col-lg-4 mb-4">
+    <!-- Results info -->
+    <div class="d-flex justify-content-between align-items-center mb-3" *ngIf="filteredArticles.length > 0">
+      <p class="text-muted mb-0">
+        Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to {{ getMathMin(currentPage * itemsPerPage, filteredArticles.length) }} of {{ filteredArticles.length }} articles
+      </p>
+    </div>
+
+    <div class="row" *ngIf="filteredArticles.length > 0; else noArticles">
+      <div *ngFor="let article of paginatedArticles" class="col-md-6 col-lg-4 mb-4">
 
         <div class="card h-100">
           <div class="card-body d-flex flex-column">
             <h5 class="card-title">{{ article.title }}</h5>
             <span class="badge bg-secondary mb-2 align-self-start">{{ article.categoryName }}</span>
-            <p class="card-text">{{ article.description }}</p>
+            <div class="desc-row d-flex align-items-start gap-2">
+              <p class="card-text description flex-grow-1" [class.expanded]="isExpanded(article)">
+                {{ article.description }}
+              </p>
+              <button *ngIf="shouldShowToggle(article)" class="btn btn-link p-0 toggle-icon" (click)="toggleExpanded(article)" [attr.aria-label]="isExpanded(article) ? 'Show less' : 'Show more'">
+                <span [class.rotate-180]="isExpanded(article)">▼</span>
+              </button>
+            </div>
 
             <!-- Will display average rating and number of ratings -->
             <!-- ⭐ Average rating (above buttons) -->
@@ -78,6 +92,33 @@
         </div>
       </div>
     </div>
+
+    <!-- Pagination Controls -->
+    <nav aria-label="Articles pagination" *ngIf="totalPages > 1" class="mt-4 mb-5">
+      <ul class="pagination justify-content-center">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button class="page-link" (click)="previousPage()" [disabled]="currentPage === 1">
+            <i class="bi bi-chevron-left"></i> Previous
+          </button>
+        </li>
+        
+        <li class="page-item" *ngFor="let page of getPageNumbers()" 
+            [class.active]="page === currentPage"
+            [class.disabled]="page === '...'">
+          <button class="page-link" 
+                  (click)="navigateToPage(page)" 
+                  [disabled]="page === '...'"
+                  *ngIf="page !== '...'">{{ page }}</button>
+          <span class="page-link" *ngIf="page === '...'">{{ page }}</span>
+        </li>
+        
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <button class="page-link" (click)="nextPage()" [disabled]="currentPage === totalPages">
+            Next <i class="bi bi-chevron-right"></i>
+          </button>
+        </li>
+      </ul>
+    </nav>
 
     <ng-template #noArticles>
       <div class="text-center py-5">

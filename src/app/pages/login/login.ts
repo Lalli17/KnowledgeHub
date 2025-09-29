@@ -14,6 +14,7 @@ import { RouterModule } from '@angular/router';
 export class LoginComponent {
   loading = false;
   error = '';
+  hidePassword = true;
 
   loginForm: any;
 
@@ -26,6 +27,10 @@ export class LoginComponent {
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
     });
+  }
+
+  togglePasswordVisibility() {
+    this.hidePassword = !this.hidePassword;
   }
 
   login() {

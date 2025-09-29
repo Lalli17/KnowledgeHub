@@ -33,27 +33,37 @@
       <!-- Password -->
       <div class="mb-3">
         <label for="password" class="form-label">Password</label>
-        <input 
-          type="password" 
-          id="password" 
-          formControlName="password" 
-          class="form-control" 
-          [ngClass]="{'is-invalid': registerForm.get('password')?.invalid && registerForm.get('password')?.touched}"
-        />
-        <div class="invalid-feedback">Password is required</div>
+        <div class="position-relative">
+          <input
+            [type]="hidePassword ? 'password' : 'text'"
+            id="password"
+            formControlName="password"
+            class="form-control"
+            [ngClass]="{'is-invalid': registerForm.get('password')?.invalid && registerForm.get('password')?.touched}"
+          />
+          <div class="invalid-feedback">Password is required</div>
+          <button type="button" class="btn position-absolute end-0 top-50 translate-middle-y me-2" (click)="togglePasswordVisibility()" *ngIf="registerForm.get('password')?.value">
+            <i class="bi" [class]="hidePassword ? 'bi-eye' : 'bi-eye-slash'"></i>
+          </button>
+        </div>
       </div>
 
       <!-- Confirm Password -->
       <div class="mb-3">
         <label for="confirmPassword" class="form-label">Confirm Password</label>
-        <input 
-          type="password" 
-          id="confirmPassword" 
-          formControlName="confirmPassword" 
-          class="form-control" 
-          [ngClass]="{'is-invalid': registerForm.hasError('mismatch') && registerForm.get('confirmPassword')?.touched}"
-        />
-        <div class="invalid-feedback">Passwords do not match</div>
+        <div class="position-relative">
+          <input
+            [type]="hideConfirmPassword ? 'password' : 'text'"
+            id="confirmPassword"
+            formControlName="confirmPassword"
+            class="form-control"
+            [ngClass]="{'is-invalid': registerForm.hasError('mismatch') && registerForm.get('confirmPassword')?.touched}"
+          />
+           <div class="invalid-feedback">Passwords do not match</div>
+          <button type="button" class="btn position-absolute end-0 top-50 translate-middle-y me-2" (click)="toggleConfirmPasswordVisibility()" *ngIf="registerForm.get('confirmPassword')?.value">
+            <i class="bi" [class]="hideConfirmPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+          </button>
+        </div>  
       </div>
 
       <!-- Error message -->

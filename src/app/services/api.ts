@@ -187,7 +187,7 @@ export class ApiService {
   // Ratings
   submitRating(articleId: number, rating: number) {
     return this.http.post<{ averageRating: number; ratingsCount: number }>(
-      `${this.base}/rate/${articleId}`,
+      `${this.base}/ArticleReview/rate/${articleId}`,
       { rating }
     );
   }
@@ -195,7 +195,7 @@ export class ApiService {
   // Reviews
   submitReview(articleId: number, review: string) {
     return this.http.post<any>(
-      `${this.base}/review/${articleId}`,
+      `${this.base}/ArticleReview/review/${articleId}`,
       { review }
     );
   }
@@ -212,9 +212,31 @@ export class ApiService {
 
 
 
-  // Users
-  listUsers(): Observable<any[]> { 
-    return this.http.get<any[]>(`${this.base}/users`); 
+  // Ratings
+  getArticleRatings(articleId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.base}/Ratings/article/${articleId}`);
   }
 
+  getArticleAverageRating(articleId: number): Observable<number> {
+    return this.http.get<number>(`${this.base}/Ratings/average/${articleId}`);
+  }
+
+  // Rejected Articles
+  getRejectedArticles(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.base}/ArticleReview/rejected`);
+  }
+
+  // Users
+ 
+  getUsers() {
+    return this.http.get<any[]>(`${this.base}/Users`);
+  }
+
+  updateUser(id: number, data: any) {
+    return this.http.put(`${this.base}/Users/${id}`, data);
+  }
+
+  deleteUser(id: number) {
+    return this.http.delete(`${this.base}/Users/${id}`);
+  }
 }

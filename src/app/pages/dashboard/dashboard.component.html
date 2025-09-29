@@ -1,6 +1,6 @@
 <div class="dashboard-container">
   <header class="dashboard-header">
-    <h1>Article Analytics Dashboard</h1>
+    <h1>Article Analytics</h1>
     <p class="dashboard-subtitle">Comprehensive overview of article metrics and performance</p>
   </header>
 
@@ -44,6 +44,7 @@
         <div class="stat-content">
           <h3>Rated</h3>
           <p class="stat-number">{{ ratedArticlesCount }}</p>
+          <p class="stat-subtext">Avg: {{ averageRating | number:'1.1-1' }}</p>
         </div>
       </div>
     </div>
@@ -97,7 +98,7 @@
       </div>
 
       <!-- Top Publishers Table -->
-      <div class="table-card">
+      <div class="table-card full-width">
         <h2>Top Publishers</h2>
         <div class="table-container">
           <table class="data-table">
