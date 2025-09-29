@@ -9,7 +9,6 @@ export interface Category {
   categoryDescription: string;
 }
 
-
 @Injectable({
   providedIn: 'root'
 })
@@ -26,21 +25,21 @@ export class CategoryService {
     return this.http.get<Category>(`${this.apiUrl}/${id}`);
   }
 
-//this will only create trhe data in the backend but will not send it back
-create(category: Partial<Category>): Observable<any> {
-  return this.http.post(this.apiUrl, category, { responseType: 'text' });
-}
+  // Create new category
+  create(category: Partial<Category>): Observable<any> {
+    return this.http.post(this.apiUrl, category, { responseType: 'text' });
+  }
 
+  // ✅ New method to check if category exists
+  checkExists(name: string): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiUrl}/exists?name=${encodeURIComponent(name)}`);
+  }
 
-update(id: number, category: Partial<Category>): Observable<any> {
-  return this.http.put(`${this.apiUrl}/${id}`, category, { responseType: 'text' });
-}
-
-
-
+  update(id: number, category: Partial<Category>): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, category, { responseType: 'text' });
+  }
 
   delete(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
 }
-
