@@ -7,7 +7,7 @@
   <!-- Statistics Cards Section -->
   <section class="stats-section">
     <div class="stats-grid">
-      <div class="stat-card approved">
+      <div class="stat-card approved" (click)="navigateToApproved()" style="cursor: pointer;">
         <div class="stat-icon">
           <i class="fas fa-check-circle"></i>
         </div>
@@ -17,7 +17,7 @@
         </div>
       </div>
 
-      <div class="stat-card rejected">
+      <div class="stat-card rejected" (click)="navigateToRejected()" style="cursor: pointer;">
         <div class="stat-icon">
           <i class="fas fa-times-circle"></i>
         </div>
@@ -27,7 +27,7 @@
         </div>
       </div>
 
-      <div class="stat-card pending">
+      <div class="stat-card pending" (click)="navigateToPending()" style="cursor: pointer;">
         <div class="stat-icon">
           <i class="fas fa-hourglass-half"></i>
         </div>
@@ -65,7 +65,11 @@
               </div>
             </div>
             <div class="legend-container">
-              <div *ngFor="let item of categoryData; let i = index" class="legend-item">
+              <div *ngFor="let item of categoryData; let i = index" 
+                   class="legend-item" 
+                   (click)="navigateToCategory(item.category)"
+                   style="cursor: pointer;"
+                   [title]="'View articles in ' + item.category">
                 <span class="legend-color" [style.background-color]="getColor(i)"></span>
                 <span class="legend-text">{{ item.category }} ({{ item.count }})</span>
               </div>
@@ -87,7 +91,9 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let item of categoryData">
+              <tr *ngFor="let item of categoryData"
+                  (click)="navigateToCategory(item.category)"
+                  style="cursor: pointer;">
                 <td>{{ item.category }}</td>
                 <td>{{ item.count }}</td>
                 <td>{{ getPercentage(item.count) }}%</td>
@@ -109,7 +115,9 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let publisher of topPublishers">
+              <tr *ngFor="let publisher of topPublishers"
+                  (click)="navigateToPublisher(publisher.publisher)"
+                  style="cursor: pointer;">
                 <td>{{ publisher.publisher }}</td>
                 <td>{{ publisher.count }}</td>
               </tr>

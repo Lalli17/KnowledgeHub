@@ -119,9 +119,9 @@ export interface PendingUrl {
   dateSubmitted?: string; // ISO date from Article.DateSubmitted
 }
 
-export interface ReviewPayload { 
-  articleIds: number[]; 
-  action: 'Approve' | 'Reject'; 
+export interface ReviewPayload {
+  articleIds: number[];
+  action: 'Approve' | 'Reject' | 'pending';
 }
 
 export interface User {
@@ -179,7 +179,7 @@ export class ApiService {
   }
 
   rejectUrl(id: number): Observable<any> {
-    const payload: ReviewPayload = { articleIds: [id], action: 'Reject' };
+    const payload: ReviewPayload = { articleIds: [id], action: 'pending' };
     return this.reviewUrls(payload);
   }
 

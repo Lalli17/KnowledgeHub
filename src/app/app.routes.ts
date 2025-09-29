@@ -11,6 +11,7 @@ import { category } from './pages/category/category';
 import { ApproveUrlsComponent } from './pages/approve-urls/approve-urls';
 import { ListUsers } from './pages/list-users/list-users';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { RejectedUrlsComponent } from './pages/rejected-urls/rejected-urls';
 
 // Import the functional guards
 import { authGuard, adminGuard, redirectAdminFromHomeGuard } from './services/auth.guard';
@@ -28,6 +29,7 @@ export const routes: Routes = [
 
   // Admin routes
   { path: 'approve-urls', component: ApproveUrlsComponent, canActivate: [adminGuard] },
+  { path: 'review', component: ApproveUrlsComponent, canActivate: [adminGuard] },
   { path: 'list-users', component: ListUsers, canActivate: [adminGuard] },
   { path: 'category', component: category },
   { path: 'category/list', component: ListCategories, canActivate: [adminGuard] },
@@ -35,6 +37,7 @@ export const routes: Routes = [
 
   // Dashboard route for review & notifications
   { path: 'dashboard', component: DashboardComponent, canActivate: [adminGuard] },
+  { path: 'rejected-urls', component: RejectedUrlsComponent, canActivate: [adminGuard] },
 
   // Fallback route for unknown paths
   { path: '**', redirectTo: '' }

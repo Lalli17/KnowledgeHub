@@ -1,0 +1,40 @@
+<div class="container mt-4">
+  <h2>Rejected Articles</h2>
+
+  <div *ngIf="isLoading" class="text-center">
+    <i class="fas fa-spinner fa-spin"></i> Loading rejected articles...
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!isLoading && rejectedArticles.length > 0" class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>URL</th>
+          <th>Category</th>
+          <th>Date Submitted</th>
+          <th>Time Ago</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let article of rejectedArticles">
+          <td>{{ article.title }}</td>
+          <td>
+            <a [href]="article.url" target="_blank" rel="noopener noreferrer">{{ article.url }}</a>
+          </td>
+          <td>{{ article.categoryName || 'N/A' }}</td>
+          <td>{{ article.dateSubmitted | date:'short' }}</td>
+          <td>{{ timeAgo(article.dateSubmitted) }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="!isLoading && rejectedArticles.length === 0 && !error" class="alert alert-info">
+    No rejected articles found.
+  </div>
+</div>

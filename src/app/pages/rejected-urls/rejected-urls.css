@@ -1,0 +1,79 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h2 {
+  color: #333;
+  margin-bottom: 30px;
+  font-weight: 600;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 10px;
+}
+
+.table {
+  margin-top: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.table th {
+  background-color: #000000;
+  color: white;
+  font-weight: 600;
+  border: none;
+  padding: 15px;
+  text-align: left;
+}
+
+.table td {
+  vertical-align: middle;
+  padding: 15px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.table tbody tr:hover {
+  background-color: #f8f9fa;
+  transition: background-color 0.3s ease;
+}
+
+.table a {
+  color: #007bff;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.table a:hover {
+  text-decoration: underline;
+  color: #0056b3;
+}
+
+.alert {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 5px;
+  border: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.alert-info {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.text-center {
+  text-align: center;
+  padding: 40px;
+}
+
+.fa-spinner {
+  font-size: 2rem;
+  color: #007bff;
+}

@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { Router } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 import { ApiService, BrowseUrl } from '../../services/api';
@@ -36,6 +35,7 @@ export class BrowseUrls implements OnInit {
   categories: { id: number; categoryName: string }[] = [];
   selectedCategoryName: string = '';
   searchTerm: string = '';
+  selectedPublisher: string = '';
 
   // Pagination
   currentPage: number = 1;
@@ -44,9 +44,20 @@ export class BrowseUrls implements OnInit {
 
   // We inject our ApiService so we can use it to make HTTP calls
 
-  constructor(private apiService: ApiService, private auth: AuthService, private router: Router) {}
+  constructor(private apiService: ApiService, private auth: AuthService, private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
+    // Handle query parameters for filters
+    this.route.queryParams.subscribe(params => {
+      this.selectedCategoryName = params['category'] || '';
+      this.selectedPublisher = params['publisher'] || '';
+      if (params['status'] === 'approved') {
+        this.selectedCategoryName = '';
+        this.selectedPublisher = '';
+      }
+      this.onFilterChange(); // Update pagination after setting filters
+    });
+
     this.apiService.browseUrls().subscribe({
       next: (data) => {
         this.articles = data ?? [];
@@ -117,12 +128,14 @@ openReviewModal(article: BrowseUrl) {
   get filteredArticles(): BrowseUrl[] {
     const term = this.searchTerm.trim().toLowerCase();
     const cat = this.selectedCategoryName;
+    const pub = this.selectedPublisher;
     return this.articles.filter(a => {
       const matchesCategory = cat ? a.categoryName === cat : true;
+      const matchesPublisher = pub ? a.postedBy === pub : true;
       const matchesSearch = term
         ? (a.title?.toLowerCase().includes(term) || a.description?.toLowerCase().includes(term))
         : true;
-      return matchesCategory && matchesSearch;
+      return matchesCategory && matchesPublisher && matchesSearch;
     });
   }
 
@@ -252,6 +265,11 @@ openReviewModal(article: BrowseUrl) {
 
   postedBy(article: BrowseUrl): string {
     return article?.postedBy ?? 'Anonymous';
+  }
+
+  // Get unique publishers for the select dropdown
+  get uniquePublishers(): string[] {
+    return [...new Set(this.articles.map(a => a.postedBy).filter(p => p))].sort();
   }
 
   // UI helpers for description expand/collapse

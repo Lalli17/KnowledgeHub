@@ -7,13 +7,19 @@
 
   <!-- Filters -->
   <div class="row g-2 mb-4">
-    <div class="col-md-4">
+    <div class="col-md-3">
       <select class="form-select" [(ngModel)]="selectedCategoryName" (ngModelChange)="onFilterChange()">
         <option value="">All Categories</option>
         <option *ngFor="let c of categories" [value]="c.categoryName">{{ c.categoryName }}</option>
       </select>
     </div>
-    <div class="col-md-8">
+    <div class="col-md-3">
+      <select class="form-select" [(ngModel)]="selectedPublisher" (ngModelChange)="onFilterChange()">
+        <option value="">All Publishers</option>
+        <option *ngFor="let p of uniquePublishers" [value]="p">{{ p }}</option>
+      </select>
+    </div>
+    <div class="col-md-6">
       <input type="text" class="form-control" placeholder="Search articles..." [(ngModel)]="searchTerm" (ngModelChange)="onFilterChange()" />
     </div>
   </div>

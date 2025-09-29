@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import emailjs from '@emailjs/browser';
 import { ApiService } from '../../services/api';
 
@@ -33,10 +34,17 @@ export class ApproveUrlsComponent implements OnInit {
     return this.pending?.some(p => !!p.selected) ?? false;
   }
 
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService, private route: ActivatedRoute) {}
 
   ngOnInit() {
-    this.loadPendingUrls();
+    this.route.queryParams.subscribe(params => {
+      const status = params['status'];
+      if (status === 'pending') {
+        this.loadPendingUrls();
+      } else {
+        this.loadPendingUrls(); // default to pending
+      }
+    });
   }
 
   loadPendingUrls() {

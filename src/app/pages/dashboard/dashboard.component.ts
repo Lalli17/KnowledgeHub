@@ -1,13 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { DashboardService, ReviewArticleDto } from '../../services/dashboard.service';
 import { NotificationService } from '../../services/notification.service';
+import { ApiService } from '../../services/api';
 import { ArticleMetrics } from '../../modules/dashboard/models/article-metrics.model';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
@@ -25,10 +28,11 @@ export class DashboardComponent implements OnInit {
   averageRating: number = 0;
   categoryData: any[] = [];
 
-
   constructor(
     private dashboardService: DashboardService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private apiService: ApiService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -155,9 +159,25 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  navigateToCategory(category: string): void {
+    this.router.navigate(['/browse'], { queryParams: { category } });
+  }
 
+  navigateToPublisher(publisher: string): void {
+    this.router.navigate(['/browse'], { queryParams: { publisher } });
+  }
 
+  navigateToApproved(): void {
+    this.router.navigate(['/browse'], { queryParams: { status: 'approved' } });
+  }
 
+  navigateToPending(): void {
+    this.router.navigate(['/review'], { queryParams: { status: 'pending' } });
+  }
+
+  navigateToRejected(): void {
+    this.router.navigate(['/rejected-urls']);
+  }
 
   getColor(index: number): string {
     const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];

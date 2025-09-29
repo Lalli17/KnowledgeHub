@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { DashboardService } from '../../services/dashboard.service';
 import { AuthService } from '../../services/auth';
 import { ApiService, BrowseUrl } from '../../services/api';
@@ -33,7 +33,8 @@ export class Home implements OnInit {
   constructor(
     private dashboardService: DashboardService,
     private authService: AuthService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -236,6 +237,22 @@ export class Home implements OnInit {
       const diffInDays = Math.floor(diffInHours / 24);
       return `${diffInDays} days ago`;
     }
+  }
+
+  navigateToCategory(category: string): void {
+    this.router.navigate(['/browse'], { queryParams: { category } });
+  }
+
+  navigateToPublisher(publisher: string): void {
+    this.router.navigate(['/browse'], { queryParams: { publisher } });
+  }
+
+  navigateToApproved(): void {
+    this.router.navigate(['/browse'], { queryParams: { status: 'approved' } });
+  }
+
+  navigateToPending(): void {
+    this.router.navigate(['/review'], { queryParams: { status: 'pending' } });
   }
 
 }
