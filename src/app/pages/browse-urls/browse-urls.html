@@ -1,3 +1,4 @@
+
 <div class="container mt-4 mb-5">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h1>Browse Articles</h1>
@@ -7,20 +8,15 @@
 
   <!-- Filters -->
   <div class="row g-2 mb-4">
-    <div class="col-md-3">
+    <div class="col-md-4">
       <select class="form-select" [(ngModel)]="selectedCategoryName" (ngModelChange)="onFilterChange()">
         <option value="">All Categories</option>
         <option *ngFor="let c of categories" [value]="c.categoryName">{{ c.categoryName }}</option>
       </select>
     </div>
-    <div class="col-md-3">
-      <select class="form-select" [(ngModel)]="selectedPublisher" (ngModelChange)="onFilterChange()">
-        <option value="">All Publishers</option>
-        <option *ngFor="let p of uniquePublishers" [value]="p">{{ p }}</option>
-      </select>
-    </div>
-    <div class="col-md-6">
-      <input type="text" class="form-control" placeholder="Search articles..." [(ngModel)]="searchTerm" (ngModelChange)="onFilterChange()" />
+    <div class="col-md-8">
+      <input type="text" class="form-control" placeholder="Search articles..." [(ngModel)]="searchTerm"
+        (ngModelChange)="onFilterChange()" />
     </div>
   </div>
 
@@ -36,47 +32,49 @@
     <!-- Results info -->
     <div class="d-flex justify-content-between align-items-center mb-3" *ngIf="filteredArticles.length > 0">
       <p class="text-muted mb-0">
-        Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to {{ getMathMin(currentPage * itemsPerPage, filteredArticles.length) }} of {{ filteredArticles.length }} articles
+        Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to
+        {{ getMathMin(currentPage * itemsPerPage, filteredArticles.length) }} of
+        {{ filteredArticles.length }} articles
       </p>
     </div>
 
     <div class="row" *ngIf="filteredArticles.length > 0; else noArticles">
       <div *ngFor="let article of paginatedArticles" class="col-md-6 col-lg-4 mb-4">
-
         <div class="card h-100">
           <div class="card-body d-flex flex-column">
             <h5 class="card-title">{{ article.title }}</h5>
             <span class="badge bg-secondary mb-2 align-self-start">{{ article.categoryName }}</span>
+
+            <!-- Description with expand/collapse -->
             <div class="desc-row d-flex align-items-start gap-2">
               <p class="card-text description flex-grow-1" [class.expanded]="isExpanded(article)">
                 {{ article.description }}
               </p>
-              <button *ngIf="shouldShowToggle(article)" class="btn btn-link p-0 toggle-icon" (click)="toggleExpanded(article)" [attr.aria-label]="isExpanded(article) ? 'Show less' : 'Show more'">
+              <button *ngIf="shouldShowToggle(article)" class="btn btn-link p-0 toggle-icon"
+                (click)="toggleExpanded(article)"
+                [attr.aria-label]="isExpanded(article) ? 'Show less' : 'Show more'">
                 <span [class.rotate-180]="isExpanded(article)">▼</span>
               </button>
             </div>
 
-            <!-- Will display average rating and number of ratings -->
-            <!-- ⭐ Average rating (above buttons) -->
+            <!-- ⭐ Average rating -->
             <p class="mb-2 mt-auto">
               <strong>Average Rating:</strong>
               {{ article?.averageRating | number:'1.1-1' }} ⭐
               ({{ article?.ratingsCount ?? 0 }} ratings)
             </p>
 
-            <!-- Will display up to 2 reviews if available  -->
-            <!-- <div *ngIf="reviews(article).length > 0" class="small text-muted mb-2">
-              <div *ngFor="let review of reviews(article) | slice:0:2">
+            <!-- 📝 Reviews preview -->
+            <div *ngIf="reviews(article).length > 0" class="small text-muted mb-2">
+              <div *ngFor="let review of reviews(article) | slice:0:2" class="border-start ps-2 mb-1">
                 <em>"{{ review.review }}"</em> — {{ review.name || 'Anonymous' }}
               </div>
-              <div *ngIf="reviews(article).length > 2">...and more</div>
-            </div> -->
-
-            <!-- <div class="mt-auto d-flex flex-wrap gap-2">
-              <button class="btn btn-sm btn-outline-success" (click)="openRatingModal(article)">Rate</button>
-              <button class="btn btn-sm btn-outline-info" (click)="openReviewModal(article)">Review</button>
-              <a [href]="article.url" target="_blank" class="btn btn-sm btn-outline-primary">Visit Link</a>
-            </div> -->
+              <div *ngIf="reviews(article).length > 2" class="text-primary small">
+                <button type="button" class="btn btn-link p-0 text-primary" (click)="openReviewsModal(article)">
+                  View all reviews
+                </button>
+              </div>
+            </div>
 
             <!-- Action buttons -->
             <div class="mt-2 d-flex flex-wrap gap-2">
@@ -90,8 +88,8 @@
                 Visit Link
               </a>
             </div>
-
           </div>
+
           <div class="card-footer text-muted">
             Shared by: {{ postedBy(article) }}
           </div>
@@ -107,17 +105,14 @@
             <i class="bi bi-chevron-left"></i> Previous
           </button>
         </li>
-        
-        <li class="page-item" *ngFor="let page of getPageNumbers()" 
-            [class.active]="page === currentPage"
-            [class.disabled]="page === '...'">
-          <button class="page-link" 
-                  (click)="navigateToPage(page)" 
-                  [disabled]="page === '...'"
-                  *ngIf="page !== '...'">{{ page }}</button>
+
+        <li class="page-item" *ngFor="let page of getPageNumbers()" [class.active]="page === currentPage"
+          [class.disabled]="page === '...'">
+          <button class="page-link" (click)="navigateToPage(page)" [disabled]="page === '...'"
+            *ngIf="page !== '...'">{{ page }}</button>
           <span class="page-link" *ngIf="page === '...'">{{ page }}</span>
         </li>
-        
+
         <li class="page-item" [class.disabled]="currentPage === totalPages">
           <button class="page-link" (click)="nextPage()" [disabled]="currentPage === totalPages">
             Next <i class="bi bi-chevron-right"></i>
@@ -129,55 +124,14 @@
     <ng-template #noArticles>
       <div class="text-center py-5">
         <h3>No URLs Found</h3>
-        <p>There are no approved articles to display yet. Why not be the first to <a routerLink="/submit">submit
-            one</a>?</p>
+        <p>
+          There are no approved articles to display yet. Why not be the first to
+          <a routerLink="/submit">submit one</a>?
+        </p>
       </div>
     </ng-template>
   </div>
 </div>
-
-<!-- ⭐ Rating Modal -->
-<!-- <div class="modal fade" id="ratingModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Rate: {{ selectedArticleTitle }}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body text-center">
-        <div class="btn-group">
-          <button *ngFor="let r of [1,2,3,4,5]"
-                  class="btn btn-outline-warning"
-                  [class.active]="r === selectedRating"
-                  (click)="selectedRating = r">{{ r }} ⭐</button>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button class="btn btn-success" (click)="submitRating()">Submit</button>
-      </div>
-    </div>
-  </div>
-</div> -->
-
-<!-- 📝 Review Modal -->
-<!-- <div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Review: {{ selectedArticleTitle }}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <textarea [(ngModel)]="reviewText" class="form-control" rows="4" placeholder="Write your review..."></textarea>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button class="btn btn-info" (click)="submitReview()">Submit</button>
-      </div>
-    </div>
-  </div>
-</div> -->
 
 <!-- ⭐ Rating Modal -->
 <div *ngIf="ratingModalOpen" class="modal-backdrop fade show"></div>
@@ -204,7 +158,6 @@
   </div>
 </div>
 
-
 <!-- 📝 Review Modal -->
 <div *ngIf="reviewModalOpen" class="modal-backdrop fade show"></div>
 <div *ngIf="reviewModalOpen" class="modal d-block" tabindex="-1" aria-hidden="true">
@@ -215,11 +168,42 @@
         <button type="button" class="btn-close" (click)="reviewModalOpen = false"></button>
       </div>
       <div class="modal-body">
-        <textarea [(ngModel)]="reviewText" class="form-control" rows="4" placeholder="Write your review..."></textarea>
+        <textarea [(ngModel)]="reviewText" class="form-control" rows="4"
+          placeholder="Write your review..."></textarea>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" (click)="reviewModalOpen = false">Cancel</button>
         <button class="btn btn-info" (click)="submitReview()">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 📋 All Reviews Modal -->
+<div *ngIf="reviewsModalOpen" class="modal-backdrop fade show"></div>
+<div *ngIf="reviewsModalOpen" class="modal d-block" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Reviews for {{ selectedArticle?.title }}</h5>
+        <button type="button" class="btn-close" (click)="reviewsModalOpen = false"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="selectedArticle?.reviews?.length; else noReviews">
+          <div *ngFor="let review of selectedArticle?.reviews; let i = index" class="border-bottom mb-2 pb-2 d-flex justify-content-between align-items-start">
+            <div>
+              <p class="mb-1"><em>"{{ review.review }}"</em></p>
+              <small class="text-muted">— {{ review.name || 'Anonymous' }} on {{ review.ratedAt | date:'medium' }}</small>
+            </div>
+            <button *ngIf="auth.isAdmin()" class="btn btn-sm btn-danger" (click)="deleteReview(review.id, i)">Delete</button>
+          </div>
+        </div>
+        <ng-template #noReviews>
+          <p class="text-muted">No reviews available.</p>
+        </ng-template>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="reviewsModalOpen = false">Close</button>
       </div>
     </div>
   </div>
