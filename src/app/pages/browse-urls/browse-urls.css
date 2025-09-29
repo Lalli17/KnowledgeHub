@@ -1,12 +1,13 @@
-/* Maintain a tidy card description area with show more/less */
+/* Description formatting */
 .description {
   display: -webkit-box;
-  -webkit-line-clamp: 5; /* default collapsed lines */
+  -webkit-line-clamp: 5;
   line-clamp: 5;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  min-height: 6.0em; /* approx 5 lines for consistent card height */
+  min-height: 6em;
   text-align: justify;
+  margin-bottom: 0.5rem; /* keeps 1 line gap before rating */
 }
 
 .description.expanded {
@@ -33,17 +34,40 @@
   height: 1.25rem;
 }
 
-/* Ensure pagination is visible above fixed footer */
+/* Fixed space for reviews */
+.reviews-preview {
+  min-height: 3.5em;
+  position: relative;
+  z-index: 1;
+}
+
+/* Buttons always clickable */
+.card-body .d-flex.flex-wrap {
+  position: relative;
+  z-index: 2;
+}
+
+/* Equal card height */
+.card {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Pagination styles */
 .pagination {
   margin-bottom: 2rem !important;
 }
 
-/* Add extra padding to the main container to prevent footer overlap */
 .container {
   padding-bottom: 3rem;
 }
 
-/* Style for ellipsis in pagination */
 .page-item.disabled .page-link {
   background-color: transparent;
   border-color: #dee2e6;
@@ -56,4 +80,3 @@
   border-color: #dee2e6;
   color: #6c757d;
 }
-

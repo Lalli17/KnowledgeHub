@@ -239,4 +239,14 @@ export class ApiService {
   deleteUser(id: number) {
     return this.http.delete(`${this.base}/Users/${id}`);
   }
+
+  getReviews(articleId: number) {
+  return this.http.get<ReviewDto[]>(`${this.base}/ArticleReview/reviews/${articleId}`);
+}
+
+deleteReview(reviewId: number): Observable<any> {
+  return this.http.delete(`${this.base}/ArticleReview/review/${reviewId}`);
+}
+
+
 }
