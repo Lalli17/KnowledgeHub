@@ -61,7 +61,6 @@ jobs:
           # Note: If using pm2, you would set the Startup Command in Azure 
           # configuration, and usually you don't need web.config.
           # slot-name: 'production' 
-
       - name: Azure Logout (Cleanup)
         # It's good practice to explicitly log out after deployment
         run: |
