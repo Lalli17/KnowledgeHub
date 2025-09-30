@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/9c8078f2-9acd-4040-958f-ffe5cda6312e/resourceGroups/KnowledgeHubPortal/providers/Microsoft.Web/sites/KnowledgeHubPortal",
+    "appService.deploySubpath": "dist\\product-catalog-web"
+}
