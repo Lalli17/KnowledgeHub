@@ -29,7 +29,7 @@ export class BrowseUrls implements OnInit {
    // ✅ Add these two properties for Angular-only modals
   ratingModalOpen = false;
   reviewModalOpen = false;
-
+  reviewsModalOpen = false;
 
   // Filters
   categories: { id: number; categoryName: string }[] = [];
@@ -44,7 +44,7 @@ export class BrowseUrls implements OnInit {
 
   // We inject our ApiService so we can use it to make HTTP calls
 
-  constructor(private apiService: ApiService, private auth: AuthService, private router: Router, private route: ActivatedRoute) {}
+  constructor(private apiService: ApiService, public auth: AuthService, private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     // Handle query parameters for filters
@@ -102,6 +102,10 @@ openReviewModal(article: BrowseUrl) {
   this.reviewModalOpen = true;
 }
 
+openReviewsModal(article: BrowseUrl) {
+  this.selectedArticle = article;
+  this.reviewsModalOpen = true;
+}
 
   submitRating() {
     if (!this.selectedArticle || !this.selectedRating) return;
@@ -243,6 +247,22 @@ openReviewModal(article: BrowseUrl) {
         console.error('Error submitting review:', err);
         alert('Failed to submit review.');
       }
+    });
+  }
+
+  // ---------- Admin: Delete review ----------
+  deleteReview(reviewId: number, index: number) {
+    if (!this.auth.isAdmin()) return;
+    if (!confirm('Are you sure you want to delete this review?')) return;
+
+    this.apiService.deleteReview(reviewId).subscribe({
+      next: () => {
+        alert('Review deleted successfully.');
+        if (this.selectedArticle?.reviews) {
+          this.selectedArticle.reviews.splice(index, 1);
+        }
+      },
+      error: (err: any) => { console.error('Error deleting review:', err); alert('Failed to delete review.'); }
     });
   }
 

@@ -41,21 +41,17 @@
       <div *ngFor="let article of recentArticles" class="article-card">
         <div class="article-header">
           <h3 class="article-title">{{ article.title }}</h3>
-          <span class="article-category">{{ article.categoryName }}</span>
         </div>
-        <p class="article-description">{{ article.description }}</p>
+        <span class="article-category" style="display: inline-block; margin-bottom: 0.5rem;">{{ article.categoryName }}</span>
+        <p class="article-description" style="font-size: 1.1rem;">{{ article.description }}</p>
         <div class="article-meta">
-          <div class="article-url">
-            <i class="bi bi-link-45deg"></i>
-            <a [href]="article.url" target="_blank" class="url-link">{{ article.url }}</a>
-          </div>
           <div class="article-info">
-            <span class="article-rating" *ngIf="article.averageRating > 0">
+            <span class="article-rating" *ngIf="article.averageRating > 0" style="font-size: 1.1rem;">
               <i class="bi bi-star-fill"></i>
               {{ article.averageRating | number:'1.1-1' }} ({{ article.ratingsCount }} ratings)
             </span>
-            <span class="article-publisher" *ngIf="article.postedBy">
-              <i class="bi bi-person"></i>
+            <span class="article-publisher" *ngIf="article.postedBy" style="font-size: 1.25rem;">
+              <i class="bi bi-person" style="font-size: 1.25rem;"></i>
               {{ article.postedBy }}
             </span>
           </div>

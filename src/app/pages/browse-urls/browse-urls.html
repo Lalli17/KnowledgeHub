@@ -65,12 +65,12 @@
             </p>
 
             <!-- Will display up to 2 reviews if available  -->
-            <!-- <div *ngIf="reviews(article).length > 0" class="small text-muted mb-2">
+            <div *ngIf="reviews(article).length > 0" class="small text-muted mb-2">
               <div *ngFor="let review of reviews(article) | slice:0:2">
                 <em>"{{ review.review }}"</em> — {{ review.name || 'Anonymous' }}
               </div>
-              <div *ngIf="reviews(article).length > 2">...and more</div>
-            </div> -->
+            </div>
+            <!-- <button *ngIf="reviews(article).length > 2" class="btn btn-link btn-sm p-0 text-decoration-none" (click)="openReviewsModal(article)">View Reviews</button> -->
 
             <!-- <div class="mt-auto d-flex flex-wrap gap-2">
               <button class="btn btn-sm btn-outline-success" (click)="openRatingModal(article)">Rate</button>
@@ -85,6 +85,9 @@
               </button>
               <button class="btn btn-sm btn-outline-info" (click)="openReviewModal(article)">
                 Review
+              </button>
+              <button class="btn btn-sm btn-outline-secondary" (click)="openReviewsModal(article)">
+                View Reviews
               </button>
               <a [href]="article.url" target="_blank" class="btn btn-sm btn-outline-primary">
                 Visit Link
@@ -220,6 +223,34 @@
       <div class="modal-footer">
         <button class="btn btn-secondary" (click)="reviewModalOpen = false">Cancel</button>
         <button class="btn btn-info" (click)="submitReview()">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 📝 Reviews Modal -->
+<div *ngIf="reviewsModalOpen" class="modal-backdrop fade show"></div>
+<div *ngIf="reviewsModalOpen" class="modal d-block" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Reviews for: {{ selectedArticle?.title }}</h5>
+        <button type="button" class="btn-close" (click)="reviewsModalOpen = false"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="selectedArticle && reviews(selectedArticle).length === 0" class="text-center">
+          No reviews yet.
+        </div>
+        <ng-container *ngIf="selectedArticle">
+          <div *ngFor="let review of reviews(selectedArticle); let i = index" class="mb-3 border-bottom pb-2">
+            <p><em>"{{ review.review }}"</em></p>
+            <small class="text-muted">— {{ review.name || 'Anonymous' }}</small>
+            <button *ngIf="auth.isAdmin()" class="btn btn-sm btn-outline-danger ms-2" (click)="deleteReview(review.id, i)">Delete</button>
+          </div>
+        </ng-container>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="reviewsModalOpen = false">Close</button>
       </div>
     </div>
   </div>

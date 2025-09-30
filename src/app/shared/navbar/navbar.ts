@@ -15,7 +15,7 @@ export class NavbarComponent {
 
   logout() {
     this.auth.logout();
-    // After logging out, navigate the user to the login page
-    this.router.navigate(['/login']);
+    // After logging out, navigate the user to the home page
+    this.router.navigate(['/']);
   }
 }

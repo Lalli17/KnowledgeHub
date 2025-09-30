@@ -239,4 +239,9 @@ export class ApiService {
   deleteUser(id: number) {
     return this.http.delete(`${this.base}/Users/${id}`);
   }
+
+  // Delete review
+  deleteReview(reviewId: number) {
+    return this.http.delete(`${this.base}/ArticleReview/review/${reviewId}`);
+  }
 }
