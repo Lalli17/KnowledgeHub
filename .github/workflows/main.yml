@@ -3,65 +3,34 @@ name: Deploy Angular App to Azure
 on:
   push:
     branches:
-      # This should match the branch you push to
-      - master 
-      # You can add other branches like 'main' if needed
-      # - main 
+      - master   # change if your branch is different
 
 jobs:
   build-and-deploy:
-    # Use the latest Ubuntu runner
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repo
-        # Action to pull the code from the GitHub repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Setup Node.js
-        # Action to set up the Node.js environment
         uses: actions/setup-node@v4
         with:
-          # Use the same Node version as specified in your original workflow
           node-version: '22'
-          
+
       - name: Install dependencies
-        # Install all packages from package.json
         run: npm install
 
       - name: Build Angular app
-        # Run the standard Angular build command
-        # The output path is configured in angular.json to be dist/KnowledgeHub/browser
         run: npm run build --if-present
 
-      # =========================================================
-      # Deployment Steps
-      # =========================================================
-      
       - name: Azure Login
-        # Action to log into Azure using the secret credentials
         uses: azure/login@v2
         with:
-          # AZURE_CREDENTIALS must be set up as a secret in your GitHub repository
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Deploy to Azure Web App
-        # Action to deploy the application package
         uses: azure/webapps-deploy@v2
         with:
-          # This must match your Azure Web App name exactly
-          app-name: KnowledgeHubPortal 
-          
-          # This must be the exact path to the build output folder 
-          # that contains index.html and web.config (which you need to add)
-          package: dist/KnowledgeHub/browser 
-          
-          # Add this line if your Azure Web App is Linux-based and you are 
-          # using pm2 service instead of web.config (IIS)
-          # Note: If using pm2, you would set the Startup Command in Azure 
-          # configuration, and usually you don't need web.config.
-          # slot-name: 'production' 
-      - name: Azure Logout (Cleanup)
-        # It's good practice to explicitly log out after deployment
-        run: |
-          az logout
+          app-name: KnowledgeHubPortal
+          package: dist/KnowledgeHub/browser
